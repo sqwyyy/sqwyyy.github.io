@@ -1,0 +1,56 @@
+<p>给定一个整数数组 A，找到 min(B) 的总和，其中 B 的范围为 A 的每个（连续）子数组。<br />
+由于答案可能很大，因此返回答案模 10^9 + 7</p>
+<a id="more"></a>
+<hr />
+<p>输入：[3,1,2,4]<br />
+输出：17<br />
+解释：<br />
+子数组为 [3]，[1]，[2]，[4]，[3,1]，[1,2]，[2,4]，[3,1,2]，[1,2,4]，[3,1,2,4]。<br />
+最小值为 3，1，2，4，1，1，2，1，1，1，和为 17。</p>
+<hr />
+<ol>
+<li>找出这个数字左边有几个，右边有几个，赋值为m、n；</li>
+<li>计算以这个数字为最小值的情况有集中：(m+1)*(n+1);</li>
+<li>遍历数组A的每一个元素，以其为最小数的次数乘其本身，再求和就是最后结果啦。</li>
+<li>正常情况下，找出数组中每一个元素左边和右边各有几个连续的、比它小的数字的复杂度为n的二次方，怎样可以优化算法复杂度呢。</li>
+<li><mark>是否可以维护一个栈，只存比当前栈顶元素更大的元素，在一个元素入栈之前要将所有比它小的数都弹出栈，那么，在这个元素入栈的时候，可以知道左边（连续）比他大的数有几个，出栈的时候会知道右边的数有几个。这样，复杂度变为了O（N）.</mark></li>
+</ol>
+<hr />
+<pre><div class="hljs"><code class="lang-java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">sumSubarrayMins</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] A)</span> </span>{
+        <span class="hljs-keyword">long</span> mod = <span class="hljs-number">1000000007</span>;
+        <span class="hljs-keyword">long</span> ans = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">if</span>(A==<span class="hljs-keyword">null</span>||A.length==<span class="hljs-number">0</span>)
+        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">int</span> len = A.length;
+        <span class="hljs-keyword">int</span>[] left=<span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[len];
+        <span class="hljs-keyword">int</span>[] right = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[len];
+        Stack&lt;Integer&gt;stack = <span class="hljs-keyword">new</span> Stack&lt;&gt;();
+        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i=<span class="hljs-number">0</span>;i&lt;len;i++){
+            <span class="hljs-keyword">while</span>(!stack.empty()&amp;&amp;A[i]&lt;=A[stack.peek()]){
+                <span class="hljs-keyword">int</span> pos = stack.pop();
+                right[pos]=i-pos-<span class="hljs-number">1</span>;
+            }
+            <span class="hljs-keyword">if</span>(stack.empty()){
+                left[i]=i;
+            }
+            <span class="hljs-keyword">else</span>{
+                left[i]=i-stack.peek()-<span class="hljs-number">1</span>;
+            }
+            stack.push(i);
+        }
+        <span class="hljs-keyword">while</span>(!stack.empty()){
+            <span class="hljs-keyword">int</span> pos = stack.pop();
+            right[pos]=len-pos-<span class="hljs-number">1</span>;
+        }
+        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i=<span class="hljs-number">0</span>;i&lt;len;i++){
+            ans+=((left[i]+<span class="hljs-number">1</span>)*(right[i]+<span class="hljs-number">1</span>)%mod)*A[i]%mod;
+        }
+        <span class="hljs-keyword">return</span> (<span class="hljs-keyword">int</span>)(ans % mod);
+    }
+}
+
+<p></code></div></pre></p>
+<p><a href="https://leetcode-cn.com/problems/sum-of-subarray-minimums/solution/onfu-za-du-de-javajie-fa-by-mei-shou-gan/" target="_blank">来源</a></p>
+
+<hr>
