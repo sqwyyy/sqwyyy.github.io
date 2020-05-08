@@ -5,9 +5,9 @@
   
   <link href="/atom.xml" rel="self"/>
   
-  <link href="http://sqwyyy.com/"/>
+  <link href="http://sqwyyy.github.io/"/>
   <updated>2020-05-08T02:35:04.794Z</updated>
-  <id>http://sqwyyy.com/</id>
+  <id>http://sqwyyy.github.io/</id>
   
   <author>
     <name>John Doe</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>&#39;test&#39;</title>
-    <link href="http://sqwyyy.com/z_post/test/"/>
-    <id>http://sqwyyy.com/z_post/test/</id>
+    <link href="http://sqwyyy.github.io/z_post/test/"/>
+    <id>http://sqwyyy.github.io/z_post/test/</id>
     <published>2020-05-07T17:48:22.000Z</published>
     <updated>2020-05-08T02:35:04.794Z</updated>
     
@@ -37,8 +37,8 @@
   
   <entry>
     <title>Leetcode 907</title>
-    <link href="http://sqwyyy.com/z_post/907/"/>
-    <id>http://sqwyyy.com/z_post/907/</id>
+    <link href="http://sqwyyy.github.io/z_post/907/"/>
+    <id>http://sqwyyy.github.io/z_post/907/</id>
     <published>2020-05-07T16:45:18.000Z</published>
     <updated>2020-05-08T02:35:10.639Z</updated>
     
@@ -51,17 +51,17 @@
     </summary>
     
     
-      <category term="数据结构" scheme="http://sqwyyy.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+      <category term="数据结构" scheme="http://sqwyyy.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
     
-      <category term="单调栈" scheme="http://sqwyyy.com/tags/%E5%8D%95%E8%B0%83%E6%A0%88/"/>
+      <category term="单调栈" scheme="http://sqwyyy.github.io/tags/%E5%8D%95%E8%B0%83%E6%A0%88/"/>
     
   </entry>
   
   <entry>
     <title>单调栈经典题</title>
-    <link href="http://sqwyyy.com/z_post/%E5%8D%95%E8%B0%83%E6%A0%88%E7%BB%8F%E5%85%B8%E9%A2%98/"/>
-    <id>http://sqwyyy.com/z_post/%E5%8D%95%E8%B0%83%E6%A0%88%E7%BB%8F%E5%85%B8%E9%A2%98/</id>
+    <link href="http://sqwyyy.github.io/z_post/%E5%8D%95%E8%B0%83%E6%A0%88%E7%BB%8F%E5%85%B8%E9%A2%98/"/>
+    <id>http://sqwyyy.github.io/z_post/%E5%8D%95%E8%B0%83%E6%A0%88%E7%BB%8F%E5%85%B8%E9%A2%98/</id>
     <published>2020-05-07T12:04:23.000Z</published>
     <updated>2020-05-08T02:35:08.447Z</updated>
     
@@ -74,10 +74,10 @@
     </summary>
     
     
-      <category term="数据结构" scheme="http://sqwyyy.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+      <category term="数据结构" scheme="http://sqwyyy.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
     
-      <category term="单调栈" scheme="http://sqwyyy.com/tags/%E5%8D%95%E8%B0%83%E6%A0%88/"/>
+      <category term="单调栈" scheme="http://sqwyyy.github.io/tags/%E5%8D%95%E8%B0%83%E6%A0%88/"/>
     
   </entry>
   
