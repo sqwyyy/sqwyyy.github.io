@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"sqwyyy.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="静态内部类：1. 静态内部类本身可以访问外部的静态资源，包括静态私有资源。但是不能访问非静态资源，可以不依赖外部类实例而实例化（因为外部类的非静态方法是需要创建外部类对象才能调用的，而你的静态内部类是不需要外部类对象就可以得到的）。成员内部类：1. 成员内部类本身可以访问外部的所有资源，但是自身不能定义静态资源，因为其实例化本身就还依赖着外部类。局部内部类：1. 局部内部类就像一个局部方法，不能被">
+  <meta name="description" content="静态内部类：1. 静态内部类本身可以访问外部的静态资源，包括静态私有资源。但是不能访问非静态资源，可以不依赖外部类实例而实例化（因为外部类的非静态方法是需要创建外部类对象才能调用的，而你的静态内部类是不需要外部类对象就可以得到的）。 成员内部类：1. 成员内部类本身可以访问外部的所有资源，但是自身不能定义静态资源，因为其实例化本身就还依赖着外部类。 局部内部类：1. 局部内部类就像一个局部方法，不">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java内部类">
 <meta property="og:url" content="https://sqwyyy.github.io/archives/2020/05/10/Java%E5%86%85%E9%83%A8%E7%B1%BB/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="静态内部类：1. 静态内部类本身可以访问外部的静态资源，包括静态私有资源。但是不能访问非静态资源，可以不依赖外部类实例而实例化（因为外部类的非静态方法是需要创建外部类对象才能调用的，而你的静态内部类是不需要外部类对象就可以得到的）。成员内部类：1. 成员内部类本身可以访问外部的所有资源，但是自身不能定义静态资源，因为其实例化本身就还依赖着外部类。局部内部类：1. 局部内部类就像一个局部方法，不能被">
+<meta property="og:description" content="静态内部类：1. 静态内部类本身可以访问外部的静态资源，包括静态私有资源。但是不能访问非静态资源，可以不依赖外部类实例而实例化（因为外部类的非静态方法是需要创建外部类对象才能调用的，而你的静态内部类是不需要外部类对象就可以得到的）。 成员内部类：1. 成员内部类本身可以访问外部的所有资源，但是自身不能定义静态资源，因为其实例化本身就还依赖着外部类。 局部内部类：1. 局部内部类就像一个局部方法，不">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-05-10T15:52:45.000Z">
 <meta property="article:modified_time" content="2020-05-10T15:55:13.848Z">
@@ -232,15 +232,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="静态内部类："><a href="#静态内部类：" class="headerlink" title="静态内部类："></a>静态内部类：</h1><pre><code>1. 静态内部类本身可以访问外部的静态资源，包括静态私有资源。但是不能访问非静态资源，可以不依赖外部类实例而实例化（因为外部类的非静态方法是需要创建外部类对象才能调用的，而你的静态内部类是不需要外部类对象就可以得到的）。</code></pre><h1 id="成员内部类："><a href="#成员内部类：" class="headerlink" title="成员内部类："></a>成员内部类：</h1><pre><code>1. 成员内部类本身可以访问外部的所有资源，但是自身不能定义静态资源，因为其实例化本身就还依赖着外部类。</code></pre><h1 id="局部内部类："><a href="#局部内部类：" class="headerlink" title="局部内部类："></a>局部内部类：</h1><pre><code>1. 局部内部类就像一个局部方法，不能被访问修饰符修饰，也不能被static修饰。
-2. 局部内部类只能访问所在代码块或者方法中被定义为final的局部变量。</code></pre><h1 id="匿名内部类："><a href="#匿名内部类：" class="headerlink" title="匿名内部类："></a>匿名内部类：</h1><pre><code>1. 没有类名的内部类，不能使用class，extends和implements，没有构造方法。
+        <h1 id="静态内部类："><a href="#静态内部类：" class="headerlink" title="静态内部类："></a>静态内部类：</h1><pre><code>1. 静态内部类本身可以访问外部的静态资源，包括静态私有资源。但是不能访问非静态资源，可以不依赖外部类实例而实例化（因为外部类的非静态方法是需要创建外部类对象才能调用的，而你的静态内部类是不需要外部类对象就可以得到的）。
+</code></pre><h1 id="成员内部类："><a href="#成员内部类：" class="headerlink" title="成员内部类："></a>成员内部类：</h1><pre><code>1. 成员内部类本身可以访问外部的所有资源，但是自身不能定义静态资源，因为其实例化本身就还依赖着外部类。
+</code></pre><h1 id="局部内部类："><a href="#局部内部类：" class="headerlink" title="局部内部类："></a>局部内部类：</h1><pre><code>1. 局部内部类就像一个局部方法，不能被访问修饰符修饰，也不能被static修饰。
+2. 局部内部类只能访问所在代码块或者方法中被定义为final的局部变量。
+</code></pre><h1 id="匿名内部类："><a href="#匿名内部类：" class="headerlink" title="匿名内部类："></a>匿名内部类：</h1><pre><code>1. 没有类名的内部类，不能使用class，extends和implements，没有构造方法。
 2. 多用于GUI中的事件处理。
 3. 不能定义静态资源
 4. 只能创建一个匿名内部类实例。
 5. 一个匿名内部类一定是在new后面的，这个匿名类必须继承一个父类或者实现一个接口。
-6. 匿名内部类是局部内部类的特殊形式，所以局部内部类的所有限制对匿名内部类也有效</code></pre><hr>
+6. 匿名内部类是局部内部类的特殊形式，所以局部内部类的所有限制对匿名内部类也有效
+</code></pre><hr>
 <a id="more"></a>
-
 <h1 id="非静态内部类为什么不能有静态成员变量和静态方法："><a href="#非静态内部类为什么不能有静态成员变量和静态方法：" class="headerlink" title="非静态内部类为什么不能有静态成员变量和静态方法："></a>非静态内部类为什么不能有静态成员变量和静态方法：</h1><p>JVM的类加载规则 ：</p>
 <ol>
 <li>static类型的属性和方法，在类加载的时候就会存在于内存中。</li>
@@ -403,7 +406,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">11k</span>
+    <span title="站点总字数">10k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>

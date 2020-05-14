@@ -316,13 +316,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="静态内部类："><a href="#静态内部类：" class="headerlink" title="静态内部类："></a>静态内部类：</h1><pre><code>1. 静态内部类本身可以访问外部的静态资源，包括静态私有资源。但是不能访问非静态资源，可以不依赖外部类实例而实例化（因为外部类的非静态方法是需要创建外部类对象才能调用的，而你的静态内部类是不需要外部类对象就可以得到的）。</code></pre><h1 id="成员内部类："><a href="#成员内部类：" class="headerlink" title="成员内部类："></a>成员内部类：</h1><pre><code>1. 成员内部类本身可以访问外部的所有资源，但是自身不能定义静态资源，因为其实例化本身就还依赖着外部类。</code></pre><h1 id="局部内部类："><a href="#局部内部类：" class="headerlink" title="局部内部类："></a>局部内部类：</h1><pre><code>1. 局部内部类就像一个局部方法，不能被访问修饰符修饰，也不能被static修饰。
-2. 局部内部类只能访问所在代码块或者方法中被定义为final的局部变量。</code></pre><h1 id="匿名内部类："><a href="#匿名内部类：" class="headerlink" title="匿名内部类："></a>匿名内部类：</h1><pre><code>1. 没有类名的内部类，不能使用class，extends和implements，没有构造方法。
+          <h1 id="静态内部类："><a href="#静态内部类：" class="headerlink" title="静态内部类："></a>静态内部类：</h1><pre><code>1. 静态内部类本身可以访问外部的静态资源，包括静态私有资源。但是不能访问非静态资源，可以不依赖外部类实例而实例化（因为外部类的非静态方法是需要创建外部类对象才能调用的，而你的静态内部类是不需要外部类对象就可以得到的）。
+</code></pre><h1 id="成员内部类："><a href="#成员内部类：" class="headerlink" title="成员内部类："></a>成员内部类：</h1><pre><code>1. 成员内部类本身可以访问外部的所有资源，但是自身不能定义静态资源，因为其实例化本身就还依赖着外部类。
+</code></pre><h1 id="局部内部类："><a href="#局部内部类：" class="headerlink" title="局部内部类："></a>局部内部类：</h1><pre><code>1. 局部内部类就像一个局部方法，不能被访问修饰符修饰，也不能被static修饰。
+2. 局部内部类只能访问所在代码块或者方法中被定义为final的局部变量。
+</code></pre><h1 id="匿名内部类："><a href="#匿名内部类：" class="headerlink" title="匿名内部类："></a>匿名内部类：</h1><pre><code>1. 没有类名的内部类，不能使用class，extends和implements，没有构造方法。
 2. 多用于GUI中的事件处理。
 3. 不能定义静态资源
 4. 只能创建一个匿名内部类实例。
 5. 一个匿名内部类一定是在new后面的，这个匿名类必须继承一个父类或者实现一个接口。
-6. 匿名内部类是局部内部类的特殊形式，所以局部内部类的所有限制对匿名内部类也有效</code></pre><hr>
+6. 匿名内部类是局部内部类的特殊形式，所以局部内部类的所有限制对匿名内部类也有效
+</code></pre><hr>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/archives/2020/05/10/Java%E5%86%85%E9%83%A8%E7%B1%BB/#more" rel="contents">
@@ -402,7 +406,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p><strong>由于HTTP协议是无状态的协议，所以服务端需要记录用户的状态时，就需要用某种机制来识具体的用户，这个机制就是Session,Cookie是实现Session的一种方式（并不是唯一的）</strong></p>
+          <p><strong>由于HTTP协议是无状态的协议，所以服务端需要记录用户的状态时，就需要用某种机制来识具体的用户，这个机制就是Session,Cookie是实现Session的一种方式（并不是唯一的）</strong><br>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/archives/2020/05/10/Session%E5%92%8CCookie/#more" rel="contents">
@@ -492,8 +496,7 @@
 
       
           <h1 id="简单的区别"><a href="#简单的区别" class="headerlink" title="简单的区别"></a>简单的区别</h1><ol>
-<li><p>ArrayList是实现了基于动态数组的数据结构，LinkedList基于链表的数据结构。 （LinkedList是双向链表，有next也有previous） </p>
-</li>
+<li>ArrayList是实现了基于动态数组的数据结构，LinkedList基于链表的数据结构。 （LinkedList是双向链表，有next也有previous） </li>
 <li><p>对于随机访问get和set，ArrayList觉得优于LinkedList，因为LinkedList要移动指针。</p>
 </li>
 <li><p>对于新增和删除操作add和remove，LinedList比较占优势，因为ArrayList要移动数据。</p>
@@ -585,7 +588,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h1><p>给定一个整数数组 A，找到 min(B) 的总和，其中 B 的范围为 A 的每个（连续）子数组。<br>由于答案可能很大，因此返回答案模 10^9 + 7</p>
+          <h1 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h1><p>给定一个整数数组 A，找到 min(B) 的总和，其中 B 的范围为 A 的每个（连续）子数组。<br>由于答案可能很大，因此返回答案模 10^9 + 7<br>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/archives/2020/05/10/Leetcode907/#more" rel="contents">
@@ -661,14 +664,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.7k</span>
+              <span>1.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -680,7 +683,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h1><p>给出一个序列，要求的是一个区间，这个区间的最小值乘以这个区间数字的和是最大值</p>
+          <h1 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h1><p>给出一个序列，要求的是一个区间，这个区间的最小值乘以这个区间数字的和是最大值<br>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/archives/2020/05/08/poj2796/#more" rel="contents">
@@ -820,7 +823,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">11k</span>
+    <span title="站点总字数">10k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
