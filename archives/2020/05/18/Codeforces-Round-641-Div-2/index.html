@@ -22,17 +22,18 @@
 
   <meta name="description" content="C Orac and LCM题意:给了n个数，让求gcd{ lcm{a[i],a[j]} } (i&lt;j)就是n个数，两两配对求出他们的lcm，对于所有lcm在求出gcd">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Codeforces Round">
-<meta property="og:url" content="https://sqwyyy.github.io/archives/2020/05/14/codeforces-round-641-Div-2/index.html">
+<meta property="og:title" content="Codeforces Round #641(Div.2)">
+<meta property="og:url" content="https://sqwyyy.github.io/archives/2020/05/18/Codeforces-Round-641-Div-2/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="C Orac and LCM题意:给了n个数，让求gcd{ lcm{a[i],a[j]} } (i&lt;j)就是n个数，两两配对求出他们的lcm，对于所有lcm在求出gcd">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-05-14T06:06:57.000Z">
-<meta property="article:modified_time" content="2020-05-18T14:16:46.148Z">
+<meta property="article:published_time" content="2020-05-18T14:22:57.000Z">
+<meta property="article:modified_time" content="2020-05-18T14:27:51.510Z">
 <meta property="article:author" content="100Cooke">
+<meta property="article:tag" content="数论">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://sqwyyy.github.io/archives/2020/05/14/codeforces-round-641-Div-2/">
+<link rel="canonical" href="https://sqwyyy.github.io/archives/2020/05/18/Codeforces-Round-641-Div-2/">
 
 
 <script id="page-configurations">
@@ -45,7 +46,7 @@
   };
 </script>
 
-  <title>Codeforces Round | Hexo</title>
+  <title>Codeforces Round #641(Div.2) | Hexo</title>
   
 
 
@@ -170,7 +171,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/14/codeforces-round-641-Div-2/">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/18/Codeforces-Round-641-Div-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -183,7 +184,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Codeforces Round
+          Codeforces Round #641(Div.2)
         </h1>
 
         <div class="post-meta">
@@ -192,16 +193,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-05-14 14:06:57" itemprop="dateCreated datePublished" datetime="2020-05-14T14:06:57+08:00">2020-05-14</time>
+              <time title="创建时间：2020-05-18 22:22:57 / 修改时间：22:27:51" itemprop="dateCreated datePublished" datetime="2020-05-18T22:22:57+08:00">2020-05-18</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-18 22:16:46" itemprop="dateModified" datetime="2020-05-18T22:16:46+08:00">2020-05-18</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -297,7 +292,6 @@ gcd(x,y)=p_1^{min(a_1,b_1)}*p_2^{min(a_2,b_2)}*...*p_k^{min(a_k,b_k)}</script><p
 </li>
 </ol>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> maxn=<span class="number">1e3</span>+<span class="number">10</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">double</span> inf=<span class="number">1000</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"><span class="keyword">typedef</span> pair&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;pr;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> mod=<span class="number">1000000007</span>;</span><br><span class="line">ll _pow(ll  a,ll b) &#123;</span><br><span class="line">    ll ans=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b) &#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;<span class="number">1</span>)</span><br><span class="line">            ans=ans*a;</span><br><span class="line">        a=a*a;</span><br><span class="line">        b&gt;&gt;=<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">ll <span class="title">gcd</span><span class="params">(ll a,ll b)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!b) <span class="keyword">return</span> a;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> gcd(b,a%b);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> n,m,t;</span><br><span class="line"><span class="built_in">string</span> mpt[maxn];</span><br><span class="line">ll dp[maxn][maxn];</span><br><span class="line"><span class="keyword">int</span> vis[maxn][maxn];</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">checkboundary</span><span class="params">(<span class="keyword">int</span> i,<span class="keyword">int</span> j)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(i&lt;<span class="number">0</span>||i&gt;=n||j&lt;<span class="number">0</span>||j&gt;=m) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> bx[]=&#123;<span class="number">1</span>,<span class="number">0</span>,<span class="number">-1</span>,<span class="number">0</span>&#125;;</span><br><span class="line"><span class="keyword">int</span> by[]=&#123;<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">-1</span>&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="built_in">cin</span>&gt;&gt;n&gt;&gt;m&gt;&gt;t;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">       <span class="built_in">cin</span>&gt;&gt;mpt[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;m;j++)&#123;</span><br><span class="line">            dp[i][j]=<span class="number">1e18</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">queue</span>&lt;pr&gt;q;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;m;j++)&#123;</span><br><span class="line">            <span class="keyword">int</span> num=<span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> k=<span class="number">0</span>;k&lt;<span class="number">4</span>;k++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(checkboundary(i+bx[k],j+by[k]))&#123;</span><br><span class="line">                    <span class="keyword">int</span> l=i+bx[k],r=j+by[k];</span><br><span class="line">                    <span class="keyword">if</span>(mpt[l][r]==mpt[i][j])&#123;</span><br><span class="line">                      <span class="keyword">if</span>(!vis[l][r]) q.push(make_pair(l,r));</span><br><span class="line">                      dp[l][r]=<span class="number">0</span>;</span><br><span class="line">                      vis[l][r]=<span class="number">1</span>;</span><br><span class="line">                      num++;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(num&gt;<span class="number">0</span>&amp;&amp;!vis[i][j])&#123;</span><br><span class="line">                q.push(make_pair(i,j));</span><br><span class="line">                dp[i][j]=<span class="number">0</span>;</span><br><span class="line">                vis[i][j]=<span class="number">1</span>;</span><br><span class="line">                num++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*for(int i=0;i&lt;n;i++)&#123;</span></span><br><span class="line"><span class="comment">        for(int j=0;j&lt;m;j++)&#123;</span></span><br><span class="line"><span class="comment">            cout&lt;&lt;vis[i][j]&lt;&lt;" ";</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">        cout&lt;&lt;endl;</span></span><br><span class="line"><span class="comment">    &#125;</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="comment">//cout&lt;&lt;q.size()&lt;&lt;endl;</span></span><br><span class="line">    <span class="keyword">while</span>(!q.empty())&#123;</span><br><span class="line">        pr now = q.front();</span><br><span class="line">        q.pop();</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">4</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">int</span> x=now.first+bx[i];</span><br><span class="line">            <span class="keyword">int</span> y=now.second+by[i];</span><br><span class="line">            <span class="keyword">if</span>(checkboundary(x,y))&#123;</span><br><span class="line">                <span class="keyword">if</span>(!vis[x][y]&amp;&amp;dp[x][y]&gt;dp[now.first][now.second]+<span class="number">1</span>)&#123;</span><br><span class="line">                    <span class="comment">//cout&lt;&lt;x&lt;&lt;" "&lt;&lt;y&lt;&lt;endl;</span></span><br><span class="line">                    vis[x][y]=<span class="number">1</span>;</span><br><span class="line">                    dp[x][y]=dp[now.first][now.second]+<span class="number">1</span>;</span><br><span class="line">                    q.push(make_pair(x,y));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   </span><br><span class="line">   <span class="keyword">while</span>(t--)&#123;</span><br><span class="line">      ll i,j,p;</span><br><span class="line">      <span class="built_in">cin</span>&gt;&gt;i&gt;&gt;j&gt;&gt;p;</span><br><span class="line">      <span class="keyword">if</span>(dp[i<span class="number">-1</span>][j<span class="number">-1</span>]&gt;p)&#123;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;mpt[i<span class="number">-1</span>][j<span class="number">-1</span>]&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span>&#123;</span><br><span class="line">        ll num = p - dp[i<span class="number">-1</span>][j<span class="number">-1</span>];</span><br><span class="line">        <span class="keyword">if</span>(num%<span class="number">2</span>==<span class="number">0</span>) <span class="built_in">cout</span>&lt;&lt;mpt[i<span class="number">-1</span>][j<span class="number">-1</span>]&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="built_in">cout</span>&lt;&lt;((mpt[i<span class="number">-1</span>][j<span class="number">-1</span>]-<span class="string">'0'</span>)^<span class="number">1</span>)&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;c</span><br></pre></td></tr></table></figure>
-
     </div>
 
     
@@ -305,6 +299,9 @@ gcd(x,y)=p_1^{min(a_1,b_1)}*p_2^{min(a_2,b_2)}*...*p_k^{min(a_k,b_k)}</script><p
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E8%AE%BA/" rel="tag"># 数论</a>
+          </div>
 
         
 
@@ -312,13 +309,10 @@ gcd(x,y)=p_1^{min(a_1,b_1)}*p_2^{min(a_2,b_2)}*...*p_k^{min(a_k,b_k)}</script><p
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/archives/2020/05/10/Java%E5%86%85%E9%83%A8%E7%B1%BB/" rel="prev" title="Java内部类">
-      <i class="fa fa-chevron-left"></i> Java内部类
+    <a href="/archives/2020/05/17/codeforces-round-643-Div-2/" rel="prev" title="codeforces round #643(Div.2)">
+      <i class="fa fa-chevron-left"></i> codeforces round #643(Div.2)
     </a></div>
-      <div class="post-nav-item">
-    <a href="/archives/2020/05/17/codeforces-round-643-Div-2/" rel="next" title="codeforces round #643(Div.2)">
-      codeforces round #643(Div.2) <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -406,7 +400,7 @@ gcd(x,y)=p_1^{min(a_1,b_1)}*p_2^{min(a_2,b_2)}*...*p_k^{min(a_k,b_k)}</script><p
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
