@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sqwyyy.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="基本类型Redis 有 5 种基础数据结构，它们分别是：string、list、字典、压缩列表和跳跃表。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis">
+<meta property="og:url" content="https://sqwyyy.github.io/archives/2020/05/25/redis/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="基本类型Redis 有 5 种基础数据结构，它们分别是：string、list、字典、压缩列表和跳跃表。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://redisbook.com/_images/graphviz-4c43eaf38cbca10d8d368a5144db6f3c69ab3d84.png">
+<meta property="og:image" content="http://redisbook.com/_images/graphviz-b91705b0d7a6c7fd5e37332a930534e0e136ae73.png">
+<meta property="og:image" content="http://redisbook.com/_images/graphviz-9e2996e6ca9665776062470cdac346e8fc255374.png">
+<meta property="og:image" content="http://redisbook.com/_images/graphviz-c871b5de1a7910aea237ca9dc86508b48da94769.png">
+<meta property="og:image" content="http://redisbook.com/_images/graphviz-3b31e4e08cc3e212f986039eb08ae77224cdeec9.png">
+<meta property="og:image" content="http://redisbook.com/_images/graphviz-86f810ac65c4e6ee58b17105dfeaa06973d8dd16.png">
+<meta property="og:image" content="https://hunter-image.oss-cn-beijing.aliyuncs.com/redis/skiplist/Redis%E8%B7%B3%E8%B7%83%E8%A1%A8.png">
+<meta property="article:published_time" content="2020-05-25T13:27:14.000Z">
+<meta property="article:modified_time" content="2020-05-25T13:31:20.694Z">
+<meta property="article:author" content="100Cooke">
+<meta property="article:tag" content="redis基础使用">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://redisbook.com/_images/graphviz-4c43eaf38cbca10d8d368a5144db6f3c69ab3d84.png">
+
+<link rel="canonical" href="https://sqwyyy.github.io/archives/2020/05/25/redis/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>redis | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband">
+	<a href="https://github.com/sqwyyy" target="_blank" rel="noopener">
+	<img width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_green_007200.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1">
+	</a>
+	</div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/redis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          redis
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-05-25 21:27:14 / 修改时间：21:31:20" itemprop="dateCreated datePublished" datetime="2020-05-25T21:27:14+08:00">2020-05-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="基本类型"><a href="#基本类型" class="headerlink" title="基本类型"></a>基本类型</h1><p>Redis 有 5 种基础数据结构，它们分别是：<strong>string、list、字典、压缩列表和跳跃表</strong>。</p>
+<a id="more"></a>
+<h2 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h2><p>Redis中的每一个对象都由一个redisObject结构表示<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisObject</span>&#123;</span></span><br><span class="line">    <span class="comment">//类型</span></span><br><span class="line">    <span class="keyword">unsigned</span> type:<span class="number">4</span>;</span><br><span class="line">    <span class="comment">//编码</span></span><br><span class="line">    <span class="keyword">unsigned</span> encoding:<span class="number">4</span>;</span><br><span class="line">    <span class="comment">//指向底层实现</span></span><br><span class="line">    <span class="keyword">void</span> *ptr;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;robj;</span><br></pre></td></tr></table></figure><br>对于Redis数据库保持的键值对来说，<strong>键总是一个字符串对象</strong>，值可以是<strong>字符串对象，列表对象，哈希对象，集合对象或者有序集合对象</strong></p>
+<h2 id="SDS"><a href="#SDS" class="headerlink" title="SDS"></a>SDS</h2><p>SDS是<strong>一种动态字符串</strong>，在redis中，它并未使用C语言中的字符串，而是自己实现了<strong>一种叫做SDS的数据结构</strong>，它的结构表示如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span>&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> len; <span class="comment">//记录buf数组中已使用字节的长度</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> <span class="built_in">free</span>; <span class="comment">//记录buf数组中剩余空间的长度</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">char</span> buf[]; <span class="comment">//字节数组，用于存储字符串</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="SDS相比于char字符数组的优势"><a href="#SDS相比于char字符数组的优势" class="headerlink" title="SDS相比于char字符数组的优势"></a>SDS相比于char字符数组的优势</h2><ul>
+<li>获取字符串长度为 O(1) 级别的操作</li>
+<li>可以避免缓冲区溢出/内存泄漏 </li>
+<li>二进制安全，C字符串的字符必须符合某种编码（ASCII）,SDS可以保持像图片，视频等这样的二进制文件。在C中的字符数组以’\0’结束，在SDS中可以允许多个’\0’的存在。<h2 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h2>双向链表的插入删除的时间复杂度为O(1)，查询的时间复杂度为O(N)<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">prev</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">next</span>;</span></span><br><span class="line">    <span class="keyword">void</span> *value;<span class="comment">//节点的值</span></span><br><span class="line">&#125; listNode;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">list</span> &#123;</span></span><br><span class="line">    listNode *head;</span><br><span class="line">    listNode *tail;</span><br><span class="line">    <span class="keyword">void</span> *(*dup)(<span class="keyword">void</span> *ptr);<span class="comment">//节点赋值函数</span></span><br><span class="line">    <span class="keyword">void</span> (*<span class="built_in">free</span>)(<span class="keyword">void</span> *ptr);<span class="comment">//节点释放函数</span></span><br><span class="line">    <span class="keyword">int</span> (*match)(<span class="keyword">void</span> *ptr, <span class="keyword">void</span> *key);<span class="comment">//节点对比函数</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> len;<span class="comment">//双向链表的长度</span></span><br><span class="line">&#125; <span class="built_in">list</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h2><p>Redis的字典使用哈希表作为底层实现,<strong>一个字典中有两个哈希表，一个哈希表里面可以有多个哈希表节点，每个哈希表节点就保存字典中的一个键值对</strong>。<br>字典:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line">    <span class="comment">// 类型特定函数</span></span><br><span class="line">    dictType *type;</span><br><span class="line">    <span class="comment">// 私有数据</span></span><br><span class="line">    <span class="keyword">void</span> *privdata;</span><br><span class="line">    <span class="comment">// 哈希表</span></span><br><span class="line">    dictht ht[<span class="number">2</span>];</span><br><span class="line">    <span class="comment">// rehash 索引</span></span><br><span class="line">    <span class="comment">// 当 rehash 不在进行时，值为 -1</span></span><br><span class="line">    <span class="keyword">int</span> rehashidx; <span class="comment">/* rehashing not in progress if rehashidx == -1 */</span></span><br><span class="line">&#125; dict;</span><br></pre></td></tr></table></figure></p>
+<p>哈希表:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span> &#123;</span></span><br><span class="line">    <span class="comment">// 哈希表数组</span></span><br><span class="line">    dictEntry **table;</span><br><span class="line">    <span class="comment">// 哈希表大小</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="built_in">size</span>;</span><br><span class="line">    <span class="comment">// 哈希表大小掩码，用于计算索引值</span></span><br><span class="line">    <span class="comment">// 总是等于 size - 1</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemask;</span><br><span class="line">    <span class="comment">// 该哈希表已有节点的数量</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> used;</span><br><span class="line">&#125; dictht;</span><br></pre></td></tr></table></figure><br>Hash表节点<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> &#123;</span></span><br><span class="line">    <span class="comment">// 键</span></span><br><span class="line">    <span class="keyword">void</span> *key;</span><br><span class="line">    <span class="comment">// 值</span></span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="keyword">void</span> *val;</span><br><span class="line">        <span class="keyword">uint64_t</span> u64;</span><br><span class="line">        <span class="keyword">int64_t</span> s64;</span><br><span class="line">    &#125; v;</span><br><span class="line">    <span class="comment">// 指向下个哈希表节点，形成链表</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> *<span class="title">next</span>;</span>  <span class="comment">// 单链表结构</span></span><br><span class="line">&#125; dictEntry;</span><br></pre></td></tr></table></figure><br>dict结构大概如上所示，</p>
+<ul>
+<li>dictht ht[2]：在dict的内部，维护了两张哈希表，作用等同于是一对滚动数组，一张表是旧表，一张表是新表，当hashtable的大小需要动态改变的时候，旧表中的元素就往新开辟的新表中迁移，当下一次变动大小，当前的新表又变成了旧表，以此达到资源的复用和效率的提升</li>
+<li>dictht::table：哈希表内部的table结构使用了<strong>链地址法来解决哈希冲突</strong>，这其实是一个指向数组的指针，数组中的每一项都是entry链表的头结点</li>
+<li>rehashidx：因为是渐进式的哈希，数据的迁移并不是一步完成的，所以需要有一个索引来指示当前的rehash进度。当rehashidx为-1时，代表没有哈希操作。</li>
+</ul>
+<ol>
+<li><p>Reids的Hash采用<strong>链地址法来处理冲突，然后它没有使用红黑树优化</strong>。</p>
+</li>
+<li><p>哈希表节点采用<strong>单链表结构</strong>。</p>
+</li>
+<li><p>rehash优化。</p>
+</li>
+</ol>
+<h2 id="rehash优化"><a href="#rehash优化" class="headerlink" title="rehash优化"></a>rehash优化</h2><p><strong>渐进式哈希的精髓在于：数据的迁移不是一次性完成的，而是可以通过dictRehash()这个函数分步规划的，并且调用方可以及时知道是否需要继续进行渐进式哈希操作。如果dict数据结构中存储了海量的数据，那么一次性迁移势必带来redis性能的下降，别忘了redis是单线程模型，在实时性要求高的场景下这可能是致命的。而渐进式哈希则将这种代价可控地分摊了，调用方可以在dict做插入，删除，更新的时候执行dictRehash()，最小化数据迁移的代价。<br>在迁移的过程中，数据是在新表还是旧表中并不是一个非常急迫的需求，迁移的过程并不会丢失数据，在旧表中找不到再到新表中寻找就是了。</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dictRehash</span><span class="params">(dict *d, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> empty_visits = n*<span class="number">10</span>; <span class="comment">/* Max number of empty buckets to visit. */</span></span><br><span class="line">    <span class="keyword">if</span> (!dictIsRehashing(d)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(n-- &amp;&amp; d-&gt;ht[<span class="number">0</span>].used != <span class="number">0</span>) &#123;</span><br><span class="line">        dictEntry *de, *nextde;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* Note that rehashidx can't overflow as we are sure there are more</span></span><br><span class="line"><span class="comment">         * elements because ht[0].used != 0 */</span></span><br><span class="line">        assert(d-&gt;ht[<span class="number">0</span>].<span class="built_in">size</span> &gt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)d-&gt;rehashidx);</span><br><span class="line">        <span class="keyword">while</span>(d-&gt;ht[<span class="number">0</span>].table[d-&gt;rehashidx] == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            d-&gt;rehashidx++;</span><br><span class="line">            <span class="keyword">if</span> (--empty_visits == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        de = d-&gt;ht[<span class="number">0</span>].table[d-&gt;rehashidx];</span><br><span class="line">        <span class="comment">/* Move all the keys in this bucket from the old to the new hash HT */</span></span><br><span class="line">        <span class="keyword">while</span>(de) &#123;</span><br><span class="line">            <span class="keyword">uint64_t</span> h;</span><br><span class="line"></span><br><span class="line">            nextde = de-&gt;next;</span><br><span class="line">            <span class="comment">/* Get the index in the new hash table */</span></span><br><span class="line">            h = dictHashKey(d, de-&gt;key) &amp; d-&gt;ht[<span class="number">1</span>].sizemask;</span><br><span class="line">            de-&gt;next = d-&gt;ht[<span class="number">1</span>].table[h];</span><br><span class="line">            d-&gt;ht[<span class="number">1</span>].table[h] = de;</span><br><span class="line">            d-&gt;ht[<span class="number">0</span>].used--;</span><br><span class="line">            d-&gt;ht[<span class="number">1</span>].used++;</span><br><span class="line">            de = nextde;</span><br><span class="line">        &#125;</span><br><span class="line">        d-&gt;ht[<span class="number">0</span>].table[d-&gt;rehashidx] = <span class="literal">NULL</span>;</span><br><span class="line">        d-&gt;rehashidx++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Check if we already rehashed the whole table... */</span></span><br><span class="line">    <span class="keyword">if</span> (d-&gt;ht[<span class="number">0</span>].used == <span class="number">0</span>) &#123;</span><br><span class="line">        zfree(d-&gt;ht[<span class="number">0</span>].table);</span><br><span class="line">        d-&gt;ht[<span class="number">0</span>] = d-&gt;ht[<span class="number">1</span>];</span><br><span class="line">        _dictReset(&amp;d-&gt;ht[<span class="number">1</span>]);</span><br><span class="line">        d-&gt;rehashidx = <span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* More to rehash... */</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><a href="https://blog.csdn.net/cqk0100/article/details/80400811" target="_blank" rel="noopener">渐进式rahash讲解</a></p>
+<p>rehash过程的图解:<br><img src="http://redisbook.com/_images/graphviz-4c43eaf38cbca10d8d368a5144db6f3c69ab3d84.png" alt=""><br><img src="http://redisbook.com/_images/graphviz-b91705b0d7a6c7fd5e37332a930534e0e136ae73.png" alt=""><br><img src="http://redisbook.com/_images/graphviz-9e2996e6ca9665776062470cdac346e8fc255374.png" alt=""><br><img src="http://redisbook.com/_images/graphviz-c871b5de1a7910aea237ca9dc86508b48da94769.png" alt=""><br><img src="http://redisbook.com/_images/graphviz-3b31e4e08cc3e212f986039eb08ae77224cdeec9.png" alt=""><br><img src="http://redisbook.com/_images/graphviz-86f810ac65c4e6ee58b17105dfeaa06973d8dd16.png" alt=""></p>
+<h2 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h2><p>Redis的跳跃表由zskiplistNode(跳跃表节点)与zskiplist（跳跃表头）组成<br>跳跃表性质:</p>
+<ol>
+<li><p>由很多层结构组成；</p>
+</li>
+<li><p>每一层都是一个有序的链表，排列顺序为由高层到底层，都至少包含两个链表节点，分别是前面的head节点和后面的nil节点；</p>
+</li>
+<li>最底层的链表包含了所有的元素；</li>
+<li>如果一个元素出现在某一层的链表中，那么在该层之下的链表也全都会出现（上一层的元素是当前层的元素的子集）；</li>
+<li>链表中的每个节点都包含两个指针，一个指向同一层的下一个链表节点，另一个指向下一层的同一个链表节点；</li>
+</ol>
+<p><img src="https://hunter-image.oss-cn-beijing.aliyuncs.com/redis/skiplist/Redis%E8%B7%B3%E8%B7%83%E8%A1%A8.png" alt=""></p>
+<p>zskiplist的结构:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplist</span>&#123;</span></span><br><span class="line">     <span class="comment">//表头节点和尾节点</span></span><br><span class="line">     <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">header</span>,*<span class="title">tail</span>;</span></span><br><span class="line">     <span class="comment">//表中节点的数量</span></span><br><span class="line">     <span class="keyword">unsigned</span> <span class="keyword">long</span> length;</span><br><span class="line">     <span class="comment">//表中层数最大的节点的层数</span></span><br><span class="line">     <span class="keyword">int</span> level;</span><br><span class="line">&#125;zskiplist;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>header:指向跳跃表的表头节点，通过这个指针程序定位表头节点的时间复杂度就为O(1)</p>
+</li>
+<li><p>tail:指向跳跃表的表尾节点,通过这个指针程序定位表尾节点的时间复杂度就为O(1)</p>
+</li>
+<li><p>level:记录目前跳跃表内,层数最大的那个节点的层数(表头节点的层数不计算在内)，通过这个属性可以再O(1)的时间复杂度内获取层高最好的节点的层数。</p>
+</li>
+<li><p>length:记录跳跃表的长度,也即是,跳跃表目前包含节点的数量(表头节点不计算在内)，通过这个属性，程序可以再O(1)的时间复杂度内返回跳跃表的长度。</p>
+</li>
+</ul>
+<p>跳跃表节点<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span>&#123;</span></span><br><span class="line">     <span class="comment">//后退指针</span></span><br><span class="line">     <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">backward</span>;</span></span><br><span class="line">     <span class="comment">//值</span></span><br><span class="line">     <span class="keyword">double</span> sorce;</span><br><span class="line">     <span class="comment">//成员对象</span></span><br><span class="line">     robj *obj;</span><br><span class="line">     <span class="comment">//层</span></span><br><span class="line">     <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistLevel</span>&#123;</span></span><br><span class="line">         <span class="comment">//前进指针</span></span><br><span class="line">         <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">foward</span>;</span></span><br><span class="line">         <span class="comment">//跨度</span></span><br><span class="line">         <span class="keyword">unsigned</span> <span class="keyword">int</span> span;</span><br><span class="line">     &#125;level[];</span><br><span class="line">&#125;zskiplistNode;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>层(level):</p>
+<p>  每个层都带有两个属性:<strong>前进指针和跨度</strong>。前进指针用于访问位于表尾方向的其他节点,而跨度则记录了前进指针所指向节点和当前节点的距离(跨度越大、距离越远)。在上图中,连线上带有数字的箭头就代表前进指针,而那个数字就是跨度。当程序从表头向表尾进行遍历时,访问会沿着层的前进指针进行。<br>  每次<strong>创建一个新跳跃表节点的时候,程序都根据幂次定律(powerlaw,越大的数出现的概率越小)随机生成一个介于1和32之间的值作为level数组的大小</strong>,这个大小就是层的“高度”。</p>
+</li>
+<li><p>跨度<br><strong>跨度实际是用来计算排位次序的，在查看某个节点的过程中，将沿途访问过的所有层的跨度累计起来，得到的结果就是目标节点在跳跃表中的排位次序</strong></p>
+</li>
+<li><p>后退(backward)指针：<br>节点中用BW字样标记节点的后退指针,它指向位于当前节点的前一个节点。后退指针在程序从表尾向表头遍历时使用。与前进指针所不同的是每个节点只有一个后退指针，因此每次只能后退一个节点。</p>
+</li>
+<li><p>分值(score):<br> 各个节点中的1.0、2.0和3.0是节点所保存的分值。在跳跃表中,节点按各自所保存的分值从小到大排列。</p>
+</li>
+<li><p>成员对象(oj):<br>  各个节点中的o1、o2和o3是节点所保存的成员对象。在同一个跳跃表中,<strong>各个节点保存的成员对象必须是唯一的,但是多个节点保存的分值却可以是相同的</strong>:分值相同的节点将按照成员对象在字典序中的大小来进行排序,成员对象较小的节点会排在前面(靠近表头的方向),而成员对象较大的节点则会排在后面(靠近表尾的方向)。</p>
+</li>
+</ul>
+<h1 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h1><h2 id="字符串对象"><a href="#字符串对象" class="headerlink" title="字符串对象"></a>字符串对象</h2><ul>
+<li>赋值:<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET key value</span><br></pre></td></tr></table></figure></li>
+<li>取值<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET key</span><br></pre></td></tr></table></figure></li>
+<li>取值并赋值<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GETSET key value</span><br></pre></td></tr></table></figure></li>
+<li>递增数字(当value为整形数据时，才可以）<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INCR key</span><br></pre></td></tr></table></figure></li>
+<li>递增数字(当value为整形数据时，才可以）<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DECR key</span><br></pre></td></tr></table></figure></li>
+<li>减少指定的整数(当value为整形数据时，才可以）<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DECRBY key decrement(指定整数)</span><br></pre></td></tr></table></figure></li>
+<li>仅当不存在时赋值（使用该命令可以实现分布式锁的功能）<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setnx key value</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Hash"><a href="#Hash" class="headerlink" title="Hash"></a>Hash</h2><p>Redis hash 是一个 string 类型的 field 和 value 的映射表，hash 特别适合用于存储对象。</p>
+<p>HSET 命令不区分插入和更新操作，当执行插入操作时 HSET 命令返回1，当执行更新操作时返回0。</p>
+<ul>
+<li><p>一次给一个字段赋值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HSET key field value</span><br><span class="line"></span><br><span class="line">hset user username AlanShelby</span><br><span class="line">(integer) 1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>一次给多个字段赋值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HMSET key field value [field value ...]</span><br><span class="line"></span><br><span class="line">hmset user username AlanShelby password admin name AlanShelby</span><br><span class="line">OK</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>一次取一个值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HGET key field</span><br><span class="line"></span><br><span class="line">hget user username</span><br><span class="line">&quot;AlanShelby&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>一次取多个值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HMGET key field [field ...]</span><br><span class="line"></span><br><span class="line">hmget user username password</span><br><span class="line">1) &quot;AlanShelby&quot;</span><br><span class="line">2) &quot;admin&quot;</span><br></pre></td></tr></table></figure></li>
+<li><p>一次取所有的值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">HGETALL key</span><br><span class="line">hgetall user</span><br><span class="line">1) &quot;username&quot; (filed)</span><br><span class="line">2) &quot;AlanShelby&quot;(vaule)</span><br><span class="line">3) &quot;password&quot;(filed)</span><br><span class="line">4) &quot;admin&quot;(vaule)</span><br><span class="line">5) &quot;name&quot;</span><br><span class="line">6) &quot;AlanShelby&quot;</span><br><span class="line">7) &quot;age&quot;</span><br><span class="line">8) &quot;24&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除字段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HDEL key field [field ...]</span><br><span class="line"></span><br><span class="line">hdel user age name</span><br><span class="line">(integer) 2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>增加数字</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HINCRBY key field increment</span><br><span class="line"></span><br><span class="line">hincrby user age 2</span><br><span class="line">(integer) 26</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="List"><a href="#List" class="headerlink" title="List"></a>List</h2><ul>
+<li><p>向两边添加元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">向左边添加元素</span><br><span class="line">LPUSH key value [value ...]</span><br><span class="line"></span><br><span class="line">lpush nameList tom lucy jack</span><br><span class="line">(integer) 3</span><br><span class="line"></span><br><span class="line">向右边添加元素</span><br><span class="line">RPUSH key value [value ...]</span><br><span class="line"></span><br><span class="line">rpush nameList alan kim joy</span><br><span class="line">(integer) 6</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看列表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">LRANGE key start stop</span><br><span class="line">当索引是-1时表示是最后一个元素</span><br><span class="line"></span><br><span class="line">lrange nameList 0 5</span><br><span class="line">1) &quot;jack&quot;</span><br><span class="line">2) &quot;lucy&quot;</span><br><span class="line">3) &quot;tom&quot;</span><br><span class="line">4) &quot;alan&quot;</span><br><span class="line">5) &quot;kim&quot;</span><br><span class="line">6) &quot;joy&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>从列表两端弹出元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">左弹出LPOP key 右弹出：RPOP key</span><br><span class="line"></span><br><span class="line">lpop nameList</span><br><span class="line">&quot;jack&quot;</span><br><span class="line"></span><br><span class="line">rpop nameList</span><br><span class="line">&quot;joy&quot;</span><br></pre></td></tr></table></figure></li>
+<li>获取列表中元素个数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">LLEN key</span><br><span class="line"></span><br><span class="line">LLEN nameList</span><br><span class="line">(integer) 4</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="set"><a href="#set" class="headerlink" title="set"></a>set</h2><ul>
+<li><p>增加元素（重复的元素是无法添加进去的）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SADD key member [member ...]</span><br><span class="line"></span><br><span class="line">sadd nameSet tom bob ben lucy</span><br><span class="line">(integer) 4</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SREM key member [member ...]</span><br><span class="line"></span><br><span class="line">srem nameSet tom lucy</span><br><span class="line">(integer) 2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取集合中的所有元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SMEMBERS key</span><br><span class="line"></span><br><span class="line">smembers nameSet</span><br><span class="line">1) &quot;ben&quot;</span><br><span class="line">2) &quot;bob&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>判断元素是否在集合中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SISMEMBER key member</span><br><span class="line"></span><br><span class="line">sismember nameSet bob</span><br><span class="line">(integer) 1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>集合运算命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">集合的差集运算 A-B</span><br><span class="line">SDIFF key [key ...]</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; sadd setA 1 2 3</span><br><span class="line">(integer) 3</span><br><span class="line">127.0.0.1:6379&gt; sadd setB 2 3 4</span><br><span class="line">(integer) 3</span><br><span class="line">127.0.0.1:6379&gt; sdiff setA setB</span><br><span class="line">1) &quot;1&quot;</span><br><span class="line">127.0.0.1:6379&gt; sdiff setB setA</span><br><span class="line">1) &quot;4&quot;</span><br><span class="line"></span><br><span class="line">集合的交集运算 A ∩ B</span><br><span class="line"></span><br><span class="line">语法：SINTER key [key ...]</span><br><span class="line">127.0.0.1:6379&gt; sinter setA setB</span><br><span class="line">1) &quot;2&quot;</span><br><span class="line">2) &quot;3&quot;</span><br><span class="line"></span><br><span class="line">集合的并集运算 A ∪ B</span><br><span class="line"></span><br><span class="line">语法：SUNION key [key ...]</span><br><span class="line">127.0.0.1:6379&gt; sunion setA setB</span><br><span class="line">1) &quot;1&quot;</span><br><span class="line">2) &quot;2&quot;</span><br><span class="line">3) &quot;3&quot;</span><br><span class="line">4) &quot;4&quot;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="SortedSet"><a href="#SortedSet" class="headerlink" title="SortedSet"></a>SortedSet</h2><ul>
+<li><p>增加元素<br>增加元素向有序集合中加入一个元素和该元素的分数，如果该元素已经存在则会用新的分数替换原有的分数。返回值是新加入到集合中的元素个数，不包含之前已经存在的元素。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">语法：ZADD key score member [score member ...]</span><br><span class="line">127.0.0.1:6379&gt; zadd scoreSet 80 tom 90 lucy 89 alan 97 jack</span><br><span class="line">(integer) 4</span><br><span class="line">127.0.0.1:6379&gt; zadd scoreSet 94 lucy</span><br><span class="line">(integer) 0</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取排名在某个范围的元素列表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">按照元素分数从小到大的顺序返回索引从 start 到 stop 之间的所有元素:</span><br><span class="line"></span><br><span class="line">ZRANGE key start stop [WITHSCORES]</span><br><span class="line">127.0.0.1:6379&gt; zrange scoreSet 0 2</span><br><span class="line">1) &quot;tom&quot;</span><br><span class="line">2) &quot;alan&quot;</span><br><span class="line">3) &quot;lucy&quot;</span><br><span class="line">127.0.0.1:6379&gt; zrange scoreSet 0 2 withscores</span><br><span class="line">1) &quot;tom&quot;</span><br><span class="line">2) &quot;80&quot;</span><br><span class="line">3) &quot;alan&quot;</span><br><span class="line">4) &quot;89&quot;</span><br><span class="line">5) &quot;lucy&quot;</span><br><span class="line">6) &quot;94&quot;</span><br><span class="line"></span><br><span class="line">按照元素分数从大到小的顺序返回索引从 start 到 stop 之间的所有元素（包含两端的元素）</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; zrevrange scoreSet 0 2</span><br><span class="line">1) &quot;tom&quot;</span><br><span class="line">2) &quot;alan&quot;</span><br><span class="line">3) &quot;lucy&quot;</span><br><span class="line">127.0.0.1:6379&gt; zrevrange scoreSet 0 2 withscores</span><br><span class="line">1) &quot;tom&quot;</span><br><span class="line">2) &quot;80&quot;</span><br><span class="line">3) &quot;alan&quot;</span><br><span class="line">4) &quot;89&quot;</span><br><span class="line">5) &quot;lucy&quot;</span><br><span class="line">6) &quot;94&quot;</span><br><span class="line"></span><br><span class="line">注意：如果需要获得元素的分数的可以在命令尾部加上 WITHSCORES 参数</span><br></pre></td></tr></table></figure></li>
+<li>获取元素的分数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ZSCORE key member</span><br><span class="line">127.0.0.1:6379&gt; zscore scoreSet jack</span><br><span class="line">&quot;97&quot;</span><br></pre></td></tr></table></figure></li>
+<li><p>删除元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ZREM key member [member ...]</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; zrem scoreSet tom jack</span><br><span class="line">(integer) 2</span><br><span class="line">127.0.0.1:6379&gt; zrange scoreSet 0 1</span><br><span class="line">1) &quot;alan&quot;</span><br><span class="line">2) &quot;lucy&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Keys 命令用于查找所有符合给定模式 pattern 的 key </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">redis 127.0.0.1:6379&gt; SET w3c1 redis</span><br><span class="line">OK</span><br><span class="line">redis 127.0.0.1:6379&gt; SET w3c2 mysql</span><br><span class="line">OK</span><br><span class="line">redis 127.0.0.1:6379&gt; SET w3c3 mongodb</span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line">redis 127.0.0.1:6379&gt; KEYS w3c*</span><br><span class="line">1) &quot;w3c3&quot;</span><br><span class="line">2) &quot;w3c1&quot;</span><br><span class="line">3) &quot;w3c2&quot;</span><br><span class="line"></span><br><span class="line">获取 redis 中所有的 key 可用使用 *</span><br><span class="line">redis 127.0.0.1:6379&gt; KEYS *</span><br><span class="line">1) &quot;w3c3&quot;</span><br><span class="line">2) &quot;w3c1&quot;</span><br><span class="line">3) &quot;w3c2&quot;</span><br></pre></td></tr></table></figure></li>
+<li>SCAN指令<br>当<strong>redis中key数量越大，keys 命令执行越慢，而且最重要的会阻塞服务器</strong></li>
+<li>SCAN 命令用于迭代当前数据库中的数据库键。</li>
+<li>SSCAN 命令用于迭代集合键中的元素。</li>
+<li>HSCAN 命令用于迭代哈希键中的键值对。</li>
+<li>ZSCAN 命令用于迭代有序集合中的元素（包括元素成员和元素分值）<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">可以用count 参数指定返回数据量：</span><br><span class="line">127.0.0.1:6379&gt; scan 0 count 1</span><br><span class="line">1) &quot;2&quot;</span><br><span class="line">2) 1) &quot;w3c3&quot;</span><br><span class="line"></span><br><span class="line">可以用match参数来匹配模式</span><br><span class="line">127.0.0.1:6379&gt; scan 0 match w3c*</span><br><span class="line">1) &quot;0&quot;</span><br><span class="line">2) 1) &quot;w3c3&quot;</span><br><span class="line">   2) &quot;w3c2&quot;</span><br><span class="line">   3) &quot;w3c1&quot;</span><br></pre></td></tr></table></figure>
+优点:</li>
+</ul>
+<ol>
+<li>不会阻塞服务器</li>
+</ol>
+<p>缺点:</p>
+<ol>
+<li>如果一个元素是在迭代过程中被添加到数据集的， 又或者是在迭代过程中从数据集中被删除的， 那么这个元素可能会被返回</li>
+<li>同一个元素可能会被返回多次。 处理重复元素的工作交由应用程序负责</li>
+</ol>
+<p><a href="http://doc.redisfans.com/key/scan.html#scan" target="_blank" rel="noopener">scan指令详解</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/redis%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/" rel="tag"># redis基础使用</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/2020/05/25/JVM/" rel="prev" title="JVM">
+      <i class="fa fa-chevron-left"></i> JVM
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/2020/05/25/springboot%E6%95%B4%E5%90%88redis/" rel="next" title="springboot整合redis">
+      springboot整合redis <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本类型"><span class="nav-number">1.</span> <span class="nav-text">基本类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#对象"><span class="nav-number">1.1.</span> <span class="nav-text">对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SDS"><span class="nav-number">1.2.</span> <span class="nav-text">SDS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SDS相比于char字符数组的优势"><span class="nav-number">1.3.</span> <span class="nav-text">SDS相比于char字符数组的优势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#双向链表"><span class="nav-number">1.4.</span> <span class="nav-text">双向链表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字典"><span class="nav-number">1.5.</span> <span class="nav-text">字典</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rehash优化"><span class="nav-number">1.6.</span> <span class="nav-text">rehash优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跳跃表"><span class="nav-number">1.7.</span> <span class="nav-text">跳跃表</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常用指令"><span class="nav-number">2.</span> <span class="nav-text">常用指令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串对象"><span class="nav-number">2.1.</span> <span class="nav-text">字符串对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hash"><span class="nav-number">2.2.</span> <span class="nav-text">Hash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#List"><span class="nav-number">2.3.</span> <span class="nav-text">List</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#set"><span class="nav-number">2.4.</span> <span class="nav-text">set</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SortedSet"><span class="nav-number">2.5.</span> <span class="nav-text">SortedSet</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="100Cooke"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">100Cooke</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">100Cooke</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">144k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:11</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    // window.MathJax = {
+    //   loader: {
+    //
+    //       load: ['[tex]/mhchem'],
+    //
+    //     source: {
+    //       '[tex]/amsCd': '[tex]/amscd',
+    //       '[tex]/AMScd': '[tex]/amscd'
+    //     }
+    //   },
+    //   tex: {
+    //     inlineMath: {'[+]': [['$', '$']]},
+    //
+    //       packages: {'[+]': ['mhchem']},
+    //
+    //     tags: 'ams'
+    //   },
+    //   options: {
+    //     renderActions: {
+    //       findScript: [10, doc => {
+    //         document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+    //           const display = !!node.type.match(/; *mode=display/);
+    //           const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+    //           const text = document.createTextNode('');
+    //           node.parentNode.replaceChild(text, node);
+    //           math.start = {node: text, delim: '', n: 0};
+    //           math.end = {node: text, delim: '', n: 0};
+    //           doc.math.push(math);
+    //         });
+    //       }, '', false],
+    //       insertedScript: [200, () => {
+    //         document.querySelectorAll('mjx-container').forEach(node => {
+    //           let target = node.parentNode;
+    //           if (target.nodeName.toLowerCase() === 'li') {
+    //             target.parentNode.classList.add('has-jax');
+    //           }
+    //         });
+    //       }, '', false]
+    //     }
+    //   }
+    // };
+    window.MathJax = {
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        processEscapes: true
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@2.7.8/unpacked/MathJax.js?config=TeX-MML-AM_CHTML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  <script type="text/javascript" src="/lib/zclip/clipboard.js"></script>	
+<script type="text/javascript" src="/js/src/custom.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false});</script></body>
+</html>
