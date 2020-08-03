@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sqwyyy.github.io/"/>
-  <updated>2020-07-27T14:02:37.956Z</updated>
+  <updated>2020-07-28T14:28:13.667Z</updated>
   <id>https://sqwyyy.github.io/</id>
   
   <author>
@@ -17,24 +17,49 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>JWT实现</title>
+    <link href="https://sqwyyy.github.io/archives/2020/07/28/JWT%E5%AE%9E%E7%8E%B0/"/>
+    <id>https://sqwyyy.github.io/archives/2020/07/28/JWT%E5%AE%9E%E7%8E%B0/</id>
+    <published>2020-07-28T14:19:50.000Z</published>
+    <updated>2020-07-28T14:28:13.667Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="什么是JWT"><a href="#什么是JWT" class="headerlink" title="什么是JWT"></a>什么是JWT</h2><ul><li><p>JSON Web Token（简称 JWT）是目前最流行的<strong>跨域认证</strong>解决方案。</p></li><li><p>是一种<strong>认证授权机制</strong>。</p></li><li><p>JWT 是为了在网络应用环境间<strong>传递声明</strong>而执行的一种基于 JSON 的开放标准（RFC 7519）。JWT 的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源。比如用在用户登录上。</p></li><li><p>可以使用 HMAC 算法或者是 RSA 的公/私秘钥对 JWT 进行签名。因为数字签名的存在，这些传递的信息是可信的。</p></li></ul><a id="more"></a><h2 id="JWT原理"><a href="#JWT原理" class="headerlink" title="JWT原理"></a>JWT原理</h2><p><img src="https://pic3.zhimg.com/v2-aa19a381cbae00402e82b710f2db6e06_b.jpg" alt=""></p><p><strong>JWT 认证流程：</strong></p><ul><li>用户输入用户名/密码登录，服务端认证成功后，会返回给客户端一个 JWT</li><li>客户端将 token 保存到本地（通常使用 localstorage，也可以使用 cookie）</li><li>当用户希望访问一个受保护的路由或者资源的时候，需要请求头的 Authorization 字段中使用Bearer 模式添加 JWT，其内容看起来是下面这样</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Authorization: Bearer &lt;token&gt;</span><br></pre></td></tr></table></figure><ul><li><p>服务端的保护路由将会检查请求头 Authorization 中的 JWT 信息，如果合法，则允许用户的行为</p></li><li><p>因为 JWT 是自包含的（内部包含了一些会话信息），因此减少了需要查询数据库的需要</p></li><li><p>因为 JWT 并不使用 Cookie 的，所以你可以使用任何域名提供你的 API 服务而不需要担心跨域资源共享问题（CORS）</p></li><li><p>因为用户的状态不再存储在服务端的内存中，所以这是一种无状态的认证机制</p></li></ul><h2 id="Token和JWT的区别"><a href="#Token和JWT的区别" class="headerlink" title="Token和JWT的区别"></a>Token和JWT的区别</h2><p><strong>相同：</strong></p><ul><li>都是访问资源的令牌</li><li>都可以记录用户的信息</li><li>都是使服务端无状态化</li><li>都是只有验证成功后，客户端才能访问服务端上受保护的资源</li></ul><p><strong>区别：</strong></p><ul><li>Token：服务端验证客户端发送过来的 Token 时，还需要查询数据库获取用户信息，然后验证 Token 是否有效。</li><li>JWT：将 Token 和 Payload 加密后存储于客户端，服务端只需要使用密钥解密进行校验（校验也是 JWT 自己实现的）即可，不需要查询或者减少查询数据库，因为 JWT 自包含了用户信息和加密的数据。</li></ul><h2 id="使用JWT时需要考虑的问题"><a href="#使用JWT时需要考虑的问题" class="headerlink" title="使用JWT时需要考虑的问题"></a>使用JWT时需要考虑的问题</h2><ul><li>因为 JWT 并不依赖 Cookie 的，所以你可以使用任何域名提供你的 API 服务而不需要担心跨域资源共享问题（CORS）</li><li>JWT 默认是不加密，但也是可以加密的。生成原始 Token 以后，可以用密钥再加密一次。</li><li>JWT 不加密的情况下，不能将秘密数据写入 JWT。</li><li>JWT 不仅可以用于认证，也可以用于交换信息。有效使用 JWT，可以降低服务器查询数据库的次数。</li><li>JWT 最大的优势是服务器不再需要存储 Session，使得服务器认证鉴权业务可以方便扩展。但这也是 JWT 最大的缺点：由于服务器不需要存储 Session 状态，因此使用过程中无法废弃某个 Token 或者更改 Token 的权限。也就是说一旦 JWT 签发了，到期之前就会始终有效，除非服务器部署额外的逻辑。</li><li>JWT 本身包含了认证信息，一旦泄露，任何人都可以获得该令牌的所有权限。为了减少盗用，JWT的有效期应该设置得比较短。对于一些比较重要的权限，使用时应该再次对用户进行认证。</li><li>JWT 适合一次性的命令认证，颁发一个有效期极短的 JWT，即使暴露了危险也很小，由于每次操作都会生成新的 JWT，因此也没必要保存 JWT，真正实现无状态。</li><li>为了减少盗用，JWT 不应该使用 HTTP 协议明码传输，要使用 HTTPS 协议传输。</li></ul><p><a href="https://zhuanlan.zhihu.com/p/164696755" target="_blank" rel="noopener">JWT详解</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;什么是JWT&quot;&gt;&lt;a href=&quot;#什么是JWT&quot; class=&quot;headerlink&quot; title=&quot;什么是JWT&quot;&gt;&lt;/a&gt;什么是JWT&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;JSON Web Token（简称 JWT）是目前最流行的&lt;strong&gt;跨域认证&lt;/strong&gt;解决方案。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;是一种&lt;strong&gt;认证授权机制&lt;/strong&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;JWT 是为了在网络应用环境间&lt;strong&gt;传递声明&lt;/strong&gt;而执行的一种基于 JSON 的开放标准（RFC 7519）。JWT 的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源。比如用在用户登录上。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;可以使用 HMAC 算法或者是 RSA 的公/私秘钥对 JWT 进行签名。因为数字签名的存在，这些传递的信息是可信的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+    
+      <category term="JWT" scheme="https://sqwyyy.github.io/categories/JWT/"/>
+    
+    
+      <category term="JWT" scheme="https://sqwyyy.github.io/tags/JWT/"/>
+    
+  </entry>
+  
+  <entry>
     <title>NAT协议</title>
     <link href="https://sqwyyy.github.io/archives/2020/07/25/NAT%E5%8D%8F%E8%AE%AE/"/>
     <id>https://sqwyyy.github.io/archives/2020/07/25/NAT%E5%8D%8F%E8%AE%AE/</id>
     <published>2020-07-25T14:47:52.000Z</published>
-    <updated>2020-07-27T14:02:37.956Z</updated>
+    <updated>2020-07-27T14:51:28.898Z</updated>
     
-    <content type="html"><![CDATA[<p>为了解决ip地址稀缺问题，采用NAT技术使内网（私网）转换为公网</p><p>具体的转换规则:</p><p>对于TCP/UDP使用：</p><p>Host’s私有IPv4 + Port &lt;——-&gt; NAT 公网IPv4 + Port</p><p>对于ICMP使用</p><p>Host’s私有IPv4 + session ID &lt;——-&gt; NAT 公网IPv4 + session ID</p><p>session ID在NAT设备上是独一无二的</p><p><a href="https://www.jianshu.com/p/4cd76e25b894" target="_blank" rel="noopener">NAT技术</a></p><p><a href="https://www.zhihu.com/question/31332694/answer/118410360" target="_blank" rel="noopener">NAT转换对应规则</a></p>]]></content>
+    <content type="html"><![CDATA[<p>为了解决ip地址稀缺问题，采用NAT技术使内网（私网）转换为公网</p><a id="more"></a><p>具体的转换规则:</p><p>对于TCP/UDP使用：</p><p>Host’s 私有IPv4 + Port &lt;——-&gt; NAT 公网IPv4 + Port</p><p>对于ICMP使用</p><p>Host’s 私有IPv4 + session ID &lt;——-&gt; NAT 公网IPv4 + session ID</p><p>session ID在NAT设备上是独一无二的</p><p><a href="https://www.jianshu.com/p/4cd76e25b894" target="_blank" rel="noopener">NAT技术</a></p><p><a href="https://www.zhihu.com/question/31332694/answer/118410360" target="_blank" rel="noopener">NAT转换对应规则</a></p>]]></content>
     
     <summary type="html">
     
-      
-      
-        &lt;p&gt;为了解决ip地址稀缺问题，采用NAT技术使内网（私网）转换为公网&lt;/p&gt;
-&lt;p&gt;具体的转换规则:&lt;/p&gt;
-&lt;p&gt;对于TCP/UDP使用：&lt;/p&gt;
-&lt;p&gt;Host’s私有IPv4 + Port &amp;lt;——-&amp;gt; NAT 公网IPv4 + Port&lt;/p&gt;
-&lt;p&gt;对于IC
-      
+      &lt;p&gt;为了解决ip地址稀缺问题，采用NAT技术使内网（私网）转换为公网&lt;/p&gt;
     
     </summary>
     
@@ -485,29 +510,6 @@
     
     
       <category term="http&amp;https" scheme="https://sqwyyy.github.io/tags/http-https/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>sql语句练习</title>
-    <link href="https://sqwyyy.github.io/archives/2020/05/25/sql%E8%AF%AD%E5%8F%A5%E7%BB%83%E4%B9%A0/"/>
-    <id>https://sqwyyy.github.io/archives/2020/05/25/sql%E8%AF%AD%E5%8F%A5%E7%BB%83%E4%B9%A0/</id>
-    <published>2020-05-25T13:08:57.000Z</published>
-    <updated>2020-05-25T13:13:00.456Z</updated>
-    
-    <content type="html"><![CDATA[<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">查找员工编号emp_no为10001其自入职以来的薪水salary涨幅值growth</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`salaries`</span> (</span><br><span class="line"><span class="string">`emp_no`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`salary`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`from_date`</span> <span class="built_in">date</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`to_date`</span> <span class="built_in">date</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">PRIMARY <span class="keyword">KEY</span> (<span class="string">`emp_no`</span>,<span class="string">`from_date`</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> ( </span><br><span class="line">(<span class="keyword">SELECT</span> salary <span class="keyword">FROM</span> salaries <span class="keyword">WHERE</span> emp_no = <span class="number">10001</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">to_date</span> <span class="keyword">DESC</span> <span class="keyword">LIMIT</span> <span class="number">1</span>) -</span><br><span class="line">(<span class="keyword">SELECT</span> salary <span class="keyword">FROM</span> salaries <span class="keyword">WHERE</span> emp_no = <span class="number">10001</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">to_date</span> <span class="keyword">ASC</span> <span class="keyword">LIMIT</span> <span class="number">1</span>)</span><br><span class="line">) <span class="keyword">AS</span> growth</span><br></pre></td></tr></table></figure><a id="more"></a><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">查找所有员工的last_name和first_name以及对应的dept_name，也包括暂时没有分配部门的员工</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`departments`</span> (</span><br><span class="line"><span class="string">`dept_no`</span> <span class="built_in">char</span>(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`dept_name`</span> <span class="built_in">varchar</span>(<span class="number">40</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">PRIMARY <span class="keyword">KEY</span> (<span class="string">`dept_no`</span>));</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`dept_emp`</span> (</span><br><span class="line"><span class="string">`emp_no`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`dept_no`</span> <span class="built_in">char</span>(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`from_date`</span> <span class="built_in">date</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`to_date`</span> <span class="built_in">date</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">PRIMARY <span class="keyword">KEY</span> (<span class="string">`emp_no`</span>,<span class="string">`dept_no`</span>));</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`employees`</span> (</span><br><span class="line"><span class="string">`emp_no`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`birth_date`</span> <span class="built_in">date</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`first_name`</span> <span class="built_in">varchar</span>(<span class="number">14</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`last_name`</span> <span class="built_in">varchar</span>(<span class="number">16</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`gender`</span> <span class="built_in">char</span>(<span class="number">1</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`hire_date`</span> <span class="built_in">date</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">PRIMARY <span class="keyword">KEY</span> (<span class="string">`emp_no`</span>));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> departments.dept_name,employees.last_name,employees.first_name</span><br><span class="line"><span class="keyword">from</span> departments <span class="keyword">left</span> <span class="keyword">join</span> dept_emp <span class="keyword">on</span> departments.dept_no = dept_emp.dept_no</span><br><span class="line"><span class="keyword">left</span> <span class="keyword">join</span> employees <span class="keyword">on</span> employees.emp_no = dept_emp.emp_no;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">本题思路为运用两次LEFT JOIN连接嵌套</span><br><span class="line">1、第一次LEFT JOIN连接employees表与dept_emp表，</span><br><span class="line">得到所有员工的last_name和first_name以及对应的dept_no，</span><br><span class="line">也包括暂时没有分配部门的员工</span><br><span class="line">2、第二次LEFT JOIN连接上表与departments表，</span><br><span class="line">即连接dept_no与dept_name，得到所有员工的last_name和first_name以及对应的dept_name，也包括暂时没有分配部门的员工</span><br></pre></td></tr></table></figure>]]></content>
-    
-    <summary type="html">
-    
-      &lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;查找员工编号emp_no为10001其自入职以来的薪水salary涨幅值growth&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`salaries`&lt;/span&gt; (&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;`emp_no`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;`salary`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;`from_date`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;date&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;string&quot;&gt;`to_date`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;date&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;PRIMARY &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`emp_no`&lt;/span&gt;,&lt;span class=&quot;string&quot;&gt;`from_date`&lt;/span&gt;));&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;SELECT&lt;/span&gt; ( &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;SELECT&lt;/span&gt; salary &lt;span class=&quot;keyword&quot;&gt;FROM&lt;/span&gt; salaries &lt;span class=&quot;keyword&quot;&gt;WHERE&lt;/span&gt; emp_no = &lt;span class=&quot;number&quot;&gt;10001&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;ORDER&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;to_date&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;DESC&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;LIMIT&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;) -&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;SELECT&lt;/span&gt; salary &lt;span class=&quot;keyword&quot;&gt;FROM&lt;/span&gt; salaries &lt;span class=&quot;keyword&quot;&gt;WHERE&lt;/span&gt; emp_no = &lt;span class=&quot;number&quot;&gt;10001&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;ORDER&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;to_date&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;ASC&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;LIMIT&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;) &lt;span class=&quot;keyword&quot;&gt;AS&lt;/span&gt; growth&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-    
-    </summary>
-    
-    
-      <category term="mysql" scheme="https://sqwyyy.github.io/categories/mysql/"/>
-    
-    
-      <category term="sql练习" scheme="https://sqwyyy.github.io/tags/sql%E7%BB%83%E4%B9%A0/"/>
     
   </entry>
   
