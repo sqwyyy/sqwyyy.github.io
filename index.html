@@ -190,7 +190,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-08-17 17:58:39 / 修改时间：18:21:19" itemprop="dateCreated datePublished" datetime="2020-08-17T17:58:39+08:00">2020-08-17</time>
+              <time title="创建时间：2020-08-17 17:58:39 / 修改时间：18:21:28" itemprop="dateCreated datePublished" datetime="2020-08-17T17:58:39+08:00">2020-08-17</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -272,7 +272,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-08-17 16:31:16 / 修改时间：17:58:16" itemprop="dateCreated datePublished" datetime="2020-08-17T16:31:16+08:00">2020-08-17</time>
+              <time title="创建时间：2020-08-17 16:31:16 / 修改时间：18:22:50" itemprop="dateCreated datePublished" datetime="2020-08-17T16:31:16+08:00">2020-08-17</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -310,26 +310,14 @@
 
       
           <h1 id="String"><a href="#String" class="headerlink" title="String"></a>String</h1><p> 在Java中， String类是不可变的。那么到底什么是不可变的对象呢？ <strong>可以这样认为：如果一个对象，在它创建完成之后，不能再改变它的状态，那么这个对象就是不可变的</strong>。不能改变状态的意思是，不能改变对象内的成员变量，包括基本数据类型的值不能改变，引用类型的变量不能指向其他的对象，引用类型指向的对象的状态也不能改变。</p>
-<p><strong>区分对象和对象引用</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String s = <span class="string">"ABCabc"</span>;  </span><br><span class="line">System.out.println(<span class="string">"s = "</span> + s);  </span><br><span class="line"></span><br><span class="line">s = <span class="string">"123456"</span>;  </span><br><span class="line">System.out.println(<span class="string">"s = "</span> + s);</span><br></pre></td></tr></table></figure>
-<p><strong>打印结果</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s = ABCabc</span><br><span class="line">s = <span class="number">123456</span></span><br></pre></td></tr></table></figure>
-<p>首先创建一个String对象s，然后让s的值为“ABCabc”， 然后又让s的值为“123456”。 从打印结果可以看出，s的值确实改变了。那么怎么还说String对象是不可变的呢？ 其实这里存在一个误区： ==s只是一个String对象的引用，并不是对象本身。对象在内存中是一块内存区，成员变量越多，这块内存区占的空间越大。引用只是一个4字节的数据，里面存放了它所指向的对象的地址，通过这个地址可以访问对象。==</p>
-<p>也就是说，s只是一个引用，它指向了一个具体的对象，当s=“123456”; 这句代码执行过之后，又创建了一个新的对象“123456”， 而引用s重新指向了这个新的对象，原来的对象“ABCabc”还在内存中存在，并没有改变。</p>
-<h1 id="StringBuffer、StringBuilder"><a href="#StringBuffer、StringBuilder" class="headerlink" title="StringBuffer、StringBuilder"></a>StringBuffer、StringBuilder</h1><p>​      StringBuffer 和 StringBuilder 都继承<strong>抽象类AbstractStringBuilder</strong>。和 String 类不同的是，StringBuffer 和 StringBuilder 类的对象能够被多次的修改，并且不产生新的未使用对象。</p>
-<hr>
-<p>​     StringBuilder 类在 Java 5 中被提出，它和 <strong>StringBuffer</strong> 之间的最大不同在于 StringBuilder 的方法<strong>不是线程安全</strong>的（不能同步访问）。</p>
-<hr>
-<h2 id="StringBuiler为什么线程安全以及StringBuffer为什么线程不安全"><a href="#StringBuiler为什么线程安全以及StringBuffer为什么线程不安全" class="headerlink" title="StringBuiler为什么线程安全以及StringBuffer为什么线程不安全"></a>StringBuiler为什么线程安全以及StringBuffer为什么线程不安全</h2><p>以StringBuilder的append()方法为例</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> StringBuilder <span class="title">append</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.append(str);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>StringBuilder的append()方法调用的父类AbstractStringBuilder的append()方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>.<span class="function"><span class="keyword">public</span> AbstractStringBuilder <span class="title">append</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line"><span class="number">2</span>.    <span class="keyword">if</span> (str == <span class="keyword">null</span>)</span><br><span class="line"><span class="number">3</span>.        <span class="keyword">return</span> appendNull();</span><br><span class="line"><span class="number">4</span>.    <span class="keyword">int</span> len = str.length();</span><br><span class="line"><span class="number">5</span>.    ensureCapacityInternal(count + len);</span><br><span class="line"><span class="number">6</span>.    str.getChars(<span class="number">0</span>, len, value, count);</span><br><span class="line"><span class="number">7</span>.    count += len;</span><br><span class="line"><span class="number">8</span>.    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line"><span class="number">9</span>.&#125;</span><br></pre></td></tr></table></figure><br>1.<strong>count += len不是一个原子操作.</strong><br>假设这个时候count值为10，len值为1，两个线程同时执行到了第七行，拿到的count值都是10，执行完加法运算后将结果赋值给count，所以两个线程执行完后count值为11，而不是12</p>
-<p>2.ensureCapacityInternal()方法是检查StringBuilder对象的原char数组的容量能不能盛下新的字符串，如果盛不下就调用expandCapacity()方法对char数组进行扩容</p>
-<p>3.AbstractStringBuilder的append()方法源码的第六行，是将String对象里面char数组里面的内容拷贝到StringBuilder对象的char数组里面.</p>
-<p>==假设现在有两个线程同时执行了StringBuilder的append()方法，两个线程都执行完了第五行的ensureCapacityInternal()方法，此刻count=5。<br>这个时候线程1的cpu时间片用完了，线程2继续执行。线程2执行完整个append()方法后count变成6了==</p>
-<hr>
-<p><strong>StringBuffer则根据synchronized关键字实现线程安全</strong></p>
-<p><a href="https://zhuanlan.zhihu.com/p/85867299" target="_blank" rel="noopener">来源1</a><br><a href="https://blog.csdn.net/u011702479/article/details/82262823" target="_blank" rel="noopener">来源2</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/2020/08/17/String%E3%80%81StringBffuer%E3%80%81StringBuilder/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
