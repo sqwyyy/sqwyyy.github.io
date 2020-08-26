@@ -27,13 +27,13 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="简介AQS是一个抽象类，主要是通过继承的方式来使用，这个类在java.util.concurrent.locks包。一个用来实现同步锁以及其他涉及到同步功能的核心组件，列入有ReentrantLock、CountDownLatch等">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://sqwyyy.github.io/archives/2020/05/25/AQS/1">
+<meta property="og:image" content="https://segmentfault.com/img/remote/1460000017372070?w=804&amp;h=449">
 <meta property="article:published_time" content="2020-05-25T12:59:22.000Z">
-<meta property="article:modified_time" content="2020-05-25T13:10:19.942Z">
+<meta property="article:modified_time" content="2020-08-26T01:45:33.799Z">
 <meta property="article:author" content="100Cooke">
 <meta property="article:tag" content="JAVA锁">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://sqwyyy.github.io/archives/2020/05/25/AQS/1">
+<meta name="twitter:image" content="https://segmentfault.com/img/remote/1460000017372070?w=804&amp;h=449">
 
 <link rel="canonical" href="https://sqwyyy.github.io/archives/2020/05/25/AQS/">
 
@@ -195,10 +195,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-05-25 20:59:22 / 修改时间：21:10:19" itemprop="dateCreated datePublished" datetime="2020-05-25T20:59:22+08:00">2020-05-25</time>
+              <time title="创建时间：2020-05-25 20:59:22" itemprop="dateCreated datePublished" datetime="2020-05-25T20:59:22+08:00">2020-05-25</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 09:45:33" itemprop="dateModified" datetime="2020-08-26T09:45:33+08:00">2020-08-26</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -240,7 +246,7 @@
 <h1 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h1><p>从使用层面来说，AQS的功能分为两种：独占和共享</p>
 <ol>
 <li>独占锁，每次只能有一个线程持有锁，比如前面给大家演示的ReentrantLock就是以独占方式实现的互斥锁</li>
-<li>共享锁，允许多个线程同时获取锁，并发访问共享资源，比如ReentrantReadWriteLock<h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><img src="1" alt="图片.png"></li>
+<li>共享锁，允许多个线程同时获取锁，并发访问共享资源，比如ReentrantReadWriteLock<h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><img src="https://segmentfault.com/img/remote/1460000017372070?w=804&amp;h=449" alt="图片.png"></li>
 </ol>
 <h1 id="AQS源码（以ReentrantLock为例"><a href="#AQS源码（以ReentrantLock为例" class="headerlink" title="AQS源码（以ReentrantLock为例)"></a>AQS源码（以ReentrantLock为例)</h1><p>ReentrantLock.lock()<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">publicvoid <span class="title">lock</span><span class="params">()</span></span>&#123;</span><br><span class="line">   sync.lock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>sync是一个静态内部类,它继承了AQS这个抽象类.Sync这个类有两个具体的实现分别是<strong>NofairSync(非公平锁)</strong>，<strong>FailSync(公平锁)</strong>.</p>
 <ol>
@@ -380,7 +386,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-count">44</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -430,12 +436,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">155k</span>
+    <span title="站点总字数">160k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:21</span>
+    <span title="站点阅读时长">2:25</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

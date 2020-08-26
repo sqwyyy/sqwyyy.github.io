@@ -20,13 +20,15 @@
     var CONFIG = {"hostname":"sqwyyy.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="article">
+  <meta name="description" content="逛街题目链接">
+<meta property="og:type" content="article">
 <meta property="og:title" content="腾讯2020校招笔试">
 <meta property="og:url" content="https://sqwyyy.github.io/archives/2020/08/16/%E8%85%BE%E8%AE%AF2020%E6%A0%A1%E6%8B%9B%E7%AC%94%E8%AF%95/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="逛街题目链接">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-08-16T05:58:44.000Z">
-<meta property="article:modified_time" content="2020-08-17T06:04:57.422Z">
+<meta property="article:modified_time" content="2020-08-23T13:58:10.155Z">
 <meta property="article:author" content="100Cooke">
 <meta name="twitter:card" content="summary">
 
@@ -198,8 +200,17 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-17 14:04:57" itemprop="dateModified" datetime="2020-08-17T14:04:57+08:00">2020-08-17</time>
+                <time title="修改时间：2020-08-23 21:58:10" itemprop="dateModified" datetime="2020-08-23T21:58:10+08:00">2020-08-23</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AC%94%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">笔试</span></a>
+                </span>
+            </span>
 
           <br>
             <span class="post-meta-item" title="本文字数">
@@ -207,14 +218,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>2.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -226,7 +237,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h1 id="逛街"><a href="#逛街" class="headerlink" title="逛街"></a>逛街</h1><p><a href="https://www.nowcoder.com/questionTerminal/35fac8d69f314e958a150c141894ef6a?answerType=1&amp;f=discussion" target="_blank" rel="noopener">题目链接</a></p>
+<a id="more"></a>
+<p>小Q在周末的时候和他的小伙伴来到大城市逛街，一条步行街上有很多高楼，共有n座高楼排成一行。</p>
+<p>小Q从第一栋一直走到了最后一栋，小Q从来都没有见到这么多的楼，所以他想知道他在每栋楼的位置处能看到多少栋楼呢？（当前面的楼的高度大于等于后面的楼时，后面的楼将被挡住） </p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>使用单调栈实现，开辟一个数组rightLook 保留往右看得到的数量，从右往左遍历，利用单调栈将看得到的数量保留在数组 rightLook 中 ，再从左往右遍历，获取往左看的计数。</p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> maxn=<span class="number">2e5</span>+<span class="number">10</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">double</span> inf=<span class="number">1000</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"><span class="keyword">typedef</span> pair&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;pr;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> mod=<span class="number">1000000007</span>;</span><br><span class="line">ll _pow(ll  a,ll b) &#123;</span><br><span class="line">    ll ans=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b) &#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;<span class="number">1</span>)</span><br><span class="line">            ans=ans*a;</span><br><span class="line">        a=a*a;</span><br><span class="line">        b&gt;&gt;=<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">ll <span class="title">gcd</span><span class="params">(ll a,ll b)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!b) <span class="keyword">return</span> a;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> gcd(b,a%b);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> r[maxn],a[maxn];</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">  ios_base::sync_with_stdio(<span class="number">0</span>), <span class="built_in">cin</span>.tie(<span class="number">0</span>), <span class="built_in">cout</span>.tie(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">int</span> n;</span><br><span class="line">  <span class="built_in">cin</span>&gt;&gt;n;</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>; i&lt;=n; i++)&#123;</span><br><span class="line">     <span class="built_in">cin</span>&gt;&gt;a[i];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">stack</span>&lt;<span class="keyword">int</span>&gt;q;</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">int</span> i=n; i&gt;=<span class="number">1</span>; i--)&#123;</span><br><span class="line">     r[i] = q.<span class="built_in">size</span>();</span><br><span class="line">     <span class="keyword">while</span>(!q.empty() &amp;&amp; a[i] &gt;= a[q.top()])&#123;</span><br><span class="line">        q.pop();</span><br><span class="line">     &#125;</span><br><span class="line">     q.push(i);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">while</span>(!q.empty()) q.pop();</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>; i&lt;=n; i++)&#123;</span><br><span class="line">     <span class="keyword">int</span> num = r[i] + <span class="number">1</span> + q.<span class="built_in">size</span>();</span><br><span class="line">     <span class="keyword">while</span>(!q.empty() &amp;&amp; a[i] &gt;= a[q.top()])&#123;</span><br><span class="line">        q.pop();</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="built_in">cout</span>&lt;&lt;num&lt;&lt;<span class="string">" "</span>;</span><br><span class="line">     q.push(i);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">cout</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="假期"><a href="#假期" class="headerlink" title="假期"></a>假期</h1><p><a href="https://www.nowcoder.com/questionTerminal/7cd9a140387e455a972e8fea0e74be2c?answerType=1&amp;f=discussion" target="_blank" rel="noopener">题目链接</a></p>
+<p>由于业绩优秀，公司给小Q放了 n 天的假，身为工作狂的小Q打算在在假期中工作、锻炼或者休息。他有个奇怪的习惯：不会连续两天工作或锻炼。只有当公司营业时，小Q才能去工作，只有当健身房营业时，小Q才能去健身，小Q一天只能干一件事。给出假期中公司，健身房的营业情况，求小Q最少需要休息几天。</p>
+<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路"></a>思路</h2><p>dp(i,0) , dp(i,1), dp(i,2) 分别记录第i天 休息/锻炼/工作 累计的最小休息天数</p>
+<p>如果第i天休息，那么前i天休息的最小天数，实际就是dp(i,0) , dp(i,1), dp(i,2)中的最小值+1</p>
+<p>如果第i天工作，那么前i天休息的最小天数，实际就是dp(i,0) , dp(i,1)中的最小值</p>
+<p>如果第i天健身，那么前i天休息的最小天数，实际就是dp(i,0) , dp(i,2)中的最小值</p>
+<p>答案就是dp(n,0) , dp(n,1), dp(n,2)中的最小值</p>
+<h2 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> maxn=<span class="number">2e5</span>+<span class="number">10</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">double</span> inf=<span class="number">1000</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"><span class="keyword">typedef</span> pair&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;pr;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> mod=<span class="number">1000000007</span>;</span><br><span class="line">ll _pow(ll  a,ll b) &#123;</span><br><span class="line">    ll ans=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b) &#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;<span class="number">1</span>)</span><br><span class="line">            ans=ans*a;</span><br><span class="line">        a=a*a;</span><br><span class="line">        b&gt;&gt;=<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">ll <span class="title">gcd</span><span class="params">(ll a,ll b)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!b) <span class="keyword">return</span> a;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> gcd(b,a%b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> a[maxn],b[maxn],dp[maxn][<span class="number">3</span>];</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ios_base::sync_with_stdio(<span class="number">0</span>), <span class="built_in">cin</span>.tie(<span class="number">0</span>), <span class="built_in">cout</span>.tie(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">int</span> n;</span><br><span class="line">    <span class="built_in">cin</span>&gt;&gt;n;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)&#123;</span><br><span class="line">        <span class="built_in">cin</span>&gt;&gt;a[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)&#123;</span><br><span class="line">        <span class="built_in">cin</span>&gt;&gt;b[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">memset</span>(dp, <span class="number">0x3f</span>, <span class="keyword">sizeof</span>(dp));</span><br><span class="line">    dp[<span class="number">0</span>][<span class="number">0</span>] = dp[<span class="number">0</span>][<span class="number">1</span>] = dp[<span class="number">0</span>][<span class="number">2</span>] = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> ( <span class="keyword">int</span> i=<span class="number">1</span>; i&lt;=n; ++i )&#123;</span><br><span class="line">        <span class="keyword">if</span> ( b[i] == <span class="number">1</span> )&#123;</span><br><span class="line">            <span class="comment">// 可以锻炼</span></span><br><span class="line">            dp[i][<span class="number">1</span>] = <span class="built_in">min</span>( dp[i<span class="number">-1</span>][<span class="number">0</span>], dp[i<span class="number">-1</span>][<span class="number">2</span>] );</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ( a[i] == <span class="number">1</span> )&#123;</span><br><span class="line">            <span class="comment">// 可以工作</span></span><br><span class="line">            dp[i][<span class="number">2</span>] = <span class="built_in">min</span>( dp[i<span class="number">-1</span>][<span class="number">0</span>], dp[i<span class="number">-1</span>][<span class="number">1</span>] );</span><br><span class="line">        &#125;</span><br><span class="line">        dp[i][<span class="number">0</span>] = <span class="built_in">min</span>(dp[i<span class="number">-1</span>][<span class="number">0</span>], <span class="built_in">min</span>(dp[i<span class="number">-1</span>][<span class="number">1</span>], dp[i<span class="number">-1</span>][<span class="number">2</span>]))+<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> res = <span class="built_in">min</span>(dp[n][<span class="number">0</span>], <span class="built_in">min</span>(dp[n][<span class="number">1</span>], dp[n][<span class="number">2</span>]));</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;res&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="视野争夺"><a href="#视野争夺" class="headerlink" title="视野争夺"></a>视野争夺</h1><p><a href="https://www.nowcoder.com/questionTerminal/61e1e66e39f348cdb6495de91ac36a41?answerType=1&amp;f=discussion" target="_blank" rel="noopener">题目链接</a></p>
+<p>小Q在进行一场竞技游戏,这场游戏的胜负关键就在于能否能争夺一条长度为L的河道,即可以看作是[0,L]的一条数轴。</p>
+<p>这款竞技游戏当中有n个可以提供视野的道具−真视守卫,第i个真视守卫能够覆盖区间[xi,yi]。现在小Q想知道至少用几个真视守卫就可以覆盖整段河道。 </p>
+<h2 id="思路-2"><a href="#思路-2" class="headerlink" title="思路"></a>思路</h2><p>根据贪心算法，将数组按照左节点排序</p>
+
     </div>
 
     
@@ -306,6 +335,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#逛街"><span class="nav-number">1.</span> <span class="nav-text">逛街</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#思路"><span class="nav-number">1.1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">1.2.</span> <span class="nav-text">代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#假期"><span class="nav-number">2.</span> <span class="nav-text">假期</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#思路-1"><span class="nav-number">2.1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码-1"><span class="nav-number">2.2.</span> <span class="nav-text">代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#视野争夺"><span class="nav-number">3.</span> <span class="nav-text">视野争夺</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#思路-2"><span class="nav-number">3.1.</span> <span class="nav-text">思路</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -321,7 +351,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-count">44</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -371,12 +401,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">155k</span>
+    <span title="站点总字数">160k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:21</span>
+    <span title="站点阅读时长">2:25</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
