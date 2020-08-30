@@ -20,20 +20,20 @@
     var CONFIG = {"hostname":"sqwyyy.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="死锁什么是死锁死锁是指两个或两个以上的进程在执行过程中，由于竞争资源或者由于彼此通信而造成的一种阻塞的现象，若无外力作用，它们都将无法推进下去。">
+  <meta name="description" content="采用synchronized12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091import java.u">
 <meta property="og:type" content="article">
-<meta property="og:title" content="死锁">
-<meta property="og:url" content="https://sqwyyy.github.io/archives/2020/05/25/%E6%AD%BB%E9%94%81/index.html">
+<meta property="og:title" content="三个线程依次输出ABC">
+<meta property="og:url" content="https://sqwyyy.github.io/archives/2020/08/30/%E4%B8%89%E4%B8%AA%E7%BA%BF%E7%A8%8B%E4%BE%9D%E6%AC%A1%E8%BE%93%E5%87%BAABC/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="死锁什么是死锁死锁是指两个或两个以上的进程在执行过程中，由于竞争资源或者由于彼此通信而造成的一种阻塞的现象，若无外力作用，它们都将无法推进下去。">
+<meta property="og:description" content="采用synchronized12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091import java.u">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-05-25T13:37:13.000Z">
-<meta property="article:modified_time" content="2020-05-25T13:38:10.326Z">
+<meta property="article:published_time" content="2020-08-30T06:54:46.000Z">
+<meta property="article:modified_time" content="2020-08-30T13:01:27.133Z">
 <meta property="article:author" content="100Cooke">
-<meta property="article:tag" content="死锁">
+<meta property="article:tag" content="JAVA锁">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://sqwyyy.github.io/archives/2020/05/25/%E6%AD%BB%E9%94%81/">
+<link rel="canonical" href="https://sqwyyy.github.io/archives/2020/08/30/%E4%B8%89%E4%B8%AA%E7%BA%BF%E7%A8%8B%E4%BE%9D%E6%AC%A1%E8%BE%93%E5%87%BAABC/">
 
 
 <script id="page-configurations">
@@ -46,7 +46,7 @@
   };
 </script>
 
-  <title>死锁 | Hexo</title>
+  <title>三个线程依次输出ABC | Hexo</title>
   
 
 
@@ -171,7 +171,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/%E6%AD%BB%E9%94%81/">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/08/30/%E4%B8%89%E4%B8%AA%E7%BA%BF%E7%A8%8B%E4%BE%9D%E6%AC%A1%E8%BE%93%E5%87%BAABC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -184,7 +184,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          死锁
+          三个线程依次输出ABC
         </h1>
 
         <div class="post-meta">
@@ -195,7 +195,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-05-25 21:37:13 / 修改时间：21:38:10" itemprop="dateCreated datePublished" datetime="2020-05-25T21:37:13+08:00">2020-05-25</time>
+              <time title="创建时间：2020-08-30 14:54:46 / 修改时间：21:01:27" itemprop="dateCreated datePublished" datetime="2020-08-30T14:54:46+08:00">2020-08-30</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -203,7 +203,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                  <a href="/categories/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">JAVA多线程</span></a>
                 </span>
             </span>
 
@@ -213,14 +213,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.9k</span>
+              <span>1.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -232,66 +232,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h1><h2 id="什么是死锁"><a href="#什么是死锁" class="headerlink" title="什么是死锁"></a>什么是死锁</h2><p>死锁是指两个或两个以上的进程在执行过程中，由于竞争资源或者由于彼此通信而造成的一种阻塞的现象，若无外力作用，它们都将无法推进下去。</p>
-<a id="more"></a>
-<h2 id="死锁产生的条件"><a href="#死锁产生的条件" class="headerlink" title="死锁产生的条件"></a>死锁产生的条件</h2><p>死锁的出现必须同时满足以下四个条件，缺一不可。</p>
+        <h1 id="采用synchronized"><a href="#采用synchronized" class="headerlink" title="采用synchronized"></a>采用synchronized</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String str = <span class="string">"ABC"</span>;</span><br><span class="line">        Main Main = <span class="keyword">new</span> Main();</span><br><span class="line">        ThreadA threadA = Main.<span class="keyword">new</span> ThreadA();</span><br><span class="line">        ThreadB threadB = Main.<span class="keyword">new</span> ThreadB();</span><br><span class="line">        ThreadC threadC = Main.<span class="keyword">new</span> ThreadC();</span><br><span class="line">        threadA.start();</span><br><span class="line">        threadB.start();</span><br><span class="line">        threadC.start();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 打印A</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> LKB</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ThreadA</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">private</span> String str;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">            <span class="keyword">while</span>(count &lt; <span class="number">28</span>)&#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (Main<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span>(count%<span class="number">3</span> == <span class="number">0</span>)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"A"</span>);</span><br><span class="line">                        count++;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;       </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 打印B</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> LKB</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ThreadB</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">private</span> String str;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">            <span class="keyword">while</span>(count &lt; <span class="number">29</span>)&#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (Main<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span>(count%<span class="number">3</span> == <span class="number">1</span>)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"B"</span>);</span><br><span class="line">                        count++;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;       </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 打印C</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> LKB</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ThreadC</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">private</span> String str;</span><br><span class="line">        </span><br><span class="line">       </span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">            <span class="keyword">while</span>(count &lt; <span class="number">30</span>)&#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (Main<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span>(count%<span class="number">3</span> == <span class="number">2</span>)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"C"</span>);</span><br><span class="line">                        System.out.println(<span class="string">"++++++"</span>);</span><br><span class="line">                        System.out.println(<span class="string">"------"</span>);</span><br><span class="line">                        count++;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;       </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
-<li><p>互斥：所谓互斥就是进程在某一时间内独占资源（更准确得说，对于某个资源访问有限制。若资源数量有限，也有可能产生死锁）。</p>
-</li>
-<li><p>请求与保持：已经持有某一资源的进程不必释放当前拥有的资源，就可以申请并获得更多的资源。</p>
-</li>
-<li>不可剥夺：进程已获得资源，在末使用完之前，不能强行剥夺。</li>
-<li>循环等待：若干进程之间形成一种头尾相接的循环等待资源关系，每个进程都在等待循环链中另一进程持有的资源。</li>
+<li>主要采用synchronzied锁住代码块，然后通过volatile变量来控制输出ABC</li>
 </ul>
-<h2 id="死锁的预防"><a href="#死锁的预防" class="headerlink" title="死锁的预防"></a>死锁的预防</h2><ul>
-<li><p>打破互斥条件。</p>
-<ul>
-<li><p>即允许进程同时访问某些资源。</p>
-</li>
-<li><p>但是，有的资源是不允许被同时访问的，像打印机等等，这是由资源本身的属性所决定的。所以，这种办法并无实用价值。</p>
-</li>
-</ul>
-</li>
-<li><p>打破请求与保持条件</p>
-<ul>
-<li><p>进程在运行前一次性地向系统申请它所需要的全部资源。</p>
-</li>
-<li><p>如果某个进程所需的全部资源得不到满足，则不分配任何资源，此进程暂不运行。只有当系统能够满足当前进程的全部资源需求时，才一次性地将所申请的资源全部分配给该进程。</p>
-</li>
-<li>由于运行的进程已占有了它所需的全部资源，所以不会发生占有资源又申请资源的现象，因此不会发生死锁。</li>
-</ul>
-</li>
-<li><p>打破不可剥夺条件</p>
-<ul>
-<li><p>允许进程强行从占有者那里夺取某些资源。</p>
-</li>
-<li><p>当一个进程已占有了某些资源，它又申请新的资源，但不能立即被满足时，它必须释放所占有的全部资源，以后再重新申请。它所释放的资源可以分配给其它进程。这就相当于该进程占有的资源被隐蔽地强占了。这种预防死锁的方法实现起来困难，会降低系统性能。</p>
-</li>
-</ul>
-</li>
-<li><p>打破循环等待条件</p>
-<ul>
-<li><p>前面三种预防策略都很棘手，所以大部分预防死锁的算法都把重心放在这里。</p>
-</li>
-<li><p>为预防循环等待条件的出现，可以实行资源<strong>有序分配策略</strong>。采用这种策略，即把资源事先分类编号，按号分配，使进程在申请，占用资源时不会形成循环链。<strong>所有进程对资源的请求必须严格按资源序号递增的顺序提出</strong>。进程占用了小号资源，才能申请大号资源，就不会产生循环链，从而预防了死锁。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="死锁的避免"><a href="#死锁的避免" class="headerlink" title="死锁的避免"></a>死锁的避免</h2><p>可以使用<strong>银行家算法</strong>来避免死锁产生<br>银行家算法有以下数据结构</p>
-<ul>
-<li><p>可利用资源向量Available<br>是个含有m个元素的数组，其中的每一个元素代表一类可利用的资源数目。如果- Available[j]=K，则表示系统中现有Rj类资源K个。</p>
-</li>
-<li><p>最大需求矩阵Max<br>这是一个n×m的矩阵，它定义了系统中n个进程中的每一个进程对m类资源的最大需求。如果Max[i,j]=K，则表示进程i需要Rj类资源的最大数目为K。</p>
-</li>
-<li>3 分配矩阵Allocation<br>这也是一个n×m的矩阵，它定义了系统中每一类资源当前已分配给每一进程的资源数。如果Allocation[i,j]=K，则表示进程i当前已分得Rj类资源的 数目为K。</li>
-<li>4 需求矩阵Need。<br>这也是一个n×m的矩阵，用以表示每一个进程尚需的各类资源数。如果Need[i,j]=K，则表示进程i还需要Rj类资源K个，方能完成其任务。</li>
-</ul>
-<p>列子：<br>| Process | Allocation | Need    | Available |<br>| ———- | ————— | ———- | ————- |<br>| P0      | 0,0,3,2    | 0,0,1,2 | 1,6,2,2   |<br>| P1      | 1,0,0,0    | 1,7,5,0 |           |<br>| P2      | 1,3,5,4    | 2,3,5,6 |           |<br>| P3      | 0,3,3,2    | 0,6,5,2 |           |<br>| P4      | 0,0,1,4    | 0,6,5,6 |           |<br>(1)该进程是否安全<br>(2)若进程P2提出请求（1，2，2，2）后，系统能否将资源分配给它</p>
-<p>(1)<br>| Process | Allocation | Need    | Allocation | Work+Allocation | Finsh |<br>| ———- | ————— | ———- | ————— | ———————- | ——- |<br>| P0      | 0,0,3,2    | 0,0,1,2 | 0,0,3,2    | 1,6,5,4         | true  |<br>| P1      | 1,0,0,0    | 1,7,5,0 | 0,3,3,2    | 1,9,8,6         | true  |<br>| P2      | 1,3,5,4    | 2,3,5,6 | 0,0,1,4    | 1,9,9,10        | true  |<br>| P3      | 0,3,3,2    | 0,6,5,2 | 1,0,0,0    | 2,9,9,10        | true  |<br>| P4      | 0,0,1,4    | 0,6,5,6 | 1,3,5,4    | 3,12,14,14      | true  |</p>
-<p>存在一个安全序列{P0,P3,P4,P1,P2}</p>
-<p>(2) P2提出请求（1，2，2，2）后，因Request&lt;=Need,Request&lt;=Available,故系统可考虑将资源分配给它，分配后Available变成（0，4，0，0）进行安全性检测，发现不能满足任何进程的需求，系统进入不安全状态，所以系统不能向P2分配资源。</p>
-
+<h2 id="采用Lock和Condition"><a href="#采用Lock和Condition" class="headerlink" title="采用Lock和Condition"></a>采用Lock和Condition</h2>
     </div>
 
     
@@ -300,7 +245,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%AD%BB%E9%94%81/" rel="tag"># 死锁</a>
+              <a href="/tags/JAVA%E9%94%81/" rel="tag"># JAVA锁</a>
           </div>
 
         
@@ -309,13 +254,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/archives/2020/05/25/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" rel="prev" title="操作系统基础知识">
-      <i class="fa fa-chevron-left"></i> 操作系统基础知识
+    <a href="/archives/2020/08/30/leetcode-%E6%9C%80%E5%A4%A7%E5%AD%90%E7%9F%A9%E9%98%B5/" rel="prev" title="leetcode 最大子矩阵">
+      <i class="fa fa-chevron-left"></i> leetcode 最大子矩阵
     </a></div>
-      <div class="post-nav-item">
-    <a href="/archives/2020/05/25/hashcode/" rel="next" title="hashcode">
-      hashcode <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -374,7 +316,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#死锁"><span class="nav-number">1.</span> <span class="nav-text">死锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是死锁"><span class="nav-number">1.1.</span> <span class="nav-text">什么是死锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁产生的条件"><span class="nav-number">1.2.</span> <span class="nav-text">死锁产生的条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁的预防"><span class="nav-number">1.3.</span> <span class="nav-text">死锁的预防</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁的避免"><span class="nav-number">1.4.</span> <span class="nav-text">死锁的避免</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#采用synchronized"><span class="nav-number">1.</span> <span class="nav-text">采用synchronized</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#采用Lock和Condition"><span class="nav-number">1.1.</span> <span class="nav-text">采用Lock和Condition</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
