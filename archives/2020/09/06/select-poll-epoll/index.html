@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sqwyyy.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="概念​      select，poll，epoll都是IO多路复用的机制。I&#x2F;O多路复用就通过一种机制，可以监视多个描述符，一旦某个描述符就绪（一般是读就绪或者写就绪），能够通知程序进行相应的读写操作。但select，poll，epoll本质上都是同步I&#x2F;O，因为他们都需要在读写事件就绪后自己负责进行读写，也就是说这个读写过程是阻塞的，而异步I&#x2F;O则无需自己负责进行读写，异步I&#x2F;O的实现会负责把">
+<meta property="og:type" content="article">
+<meta property="og:title" content="select poll epoll">
+<meta property="og:url" content="https://sqwyyy.github.io/archives/2020/09/06/select-poll-epoll/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="概念​      select，poll，epoll都是IO多路复用的机制。I&#x2F;O多路复用就通过一种机制，可以监视多个描述符，一旦某个描述符就绪（一般是读就绪或者写就绪），能够通知程序进行相应的读写操作。但select，poll，epoll本质上都是同步I&#x2F;O，因为他们都需要在读写事件就绪后自己负责进行读写，也就是说这个读写过程是阻塞的，而异步I&#x2F;O则无需自己负责进行读写，异步I&#x2F;O的实现会负责把">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-0cccb4976f8f2c2f8107f2b3a5bc46b3_720w.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-85dba5430f3c439e4647ea4d97ba54fc_720w.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-a86b203b8d955466fff34211d965d9eb_720w.jpg">
+<meta property="og:image" content="https://picb.zhimg.com/80/v2-b49bb08a6a1b7159073b71c4d6591185_720w.jpg">
+<meta property="og:image" content="https://img-blog.csdn.net/20150304162309832">
+<meta property="article:published_time" content="2020-09-06T12:57:39.000Z">
+<meta property="article:modified_time" content="2020-09-07T03:11:25.259Z">
+<meta property="article:author" content="100Cooke">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic2.zhimg.com/80/v2-0cccb4976f8f2c2f8107f2b3a5bc46b3_720w.jpg">
+
+<link rel="canonical" href="https://sqwyyy.github.io/archives/2020/09/06/select-poll-epoll/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>select poll epoll | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband">
+	<a href="https://github.com/sqwyyy" target="_blank" rel="noopener">
+	<img width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_green_007200.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1">
+	</a>
+	</div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/09/06/select-poll-epoll/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          select poll epoll
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-06 20:57:39" itemprop="dateCreated datePublished" datetime="2020-09-06T20:57:39+08:00">2020-09-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-07 11:11:25" itemprop="dateModified" datetime="2020-09-07T11:11:25+08:00">2020-09-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><p>​      select，poll，epoll都是IO多路复用的机制。I/O多路复用就通过一种机制，可以监视多个描述符，一旦某个描述符就绪（一般是读就绪或者写就绪），能够通知程序进行相应的读写操作。<strong>但select，poll，epoll本质上都是同步I/O，因为他们都需要在读写事件就绪后自己负责进行读写，也就是说这个读写过程是阻塞的</strong>，而异步I/O则无需自己负责进行读写，异步I/O的实现会负责把数据从内核拷贝到用户空间。</p>
+<a id="more"></a>
+<h1 id="多路IO复用"><a href="#多路IO复用" class="headerlink" title="多路IO复用"></a>多路IO复用</h1><p><strong>I/O多路复用就通过一种机制，让单个进程可以监视多个文件描述符，一旦某个描述符就绪（一般是读就绪或写就绪），能够通知程序进行相应的读写操作。</strong>。</p>
+<p>假设你是一个老师，让30个学生解答一道题目，然后检查学生做的是否正确，你有下面几个选择：</p>
+<ol>
+<li>第一种选择：<strong>按顺序逐个检查</strong>，先检查A，然后是B，之后是C、D。。。这中间如果有一个学生卡主，全班都会被耽误。<br>这种模式就好比，你用循环挨个处理socket，根本不具有并发能力。</li>
+<li>第二种选择：你<strong>创建30个分身</strong>，每个分身检查一个学生的答案是否正确。 这种类似于为每一个用户创建一个进程或者线程处理连接。</li>
+<li>第三种选择，你<strong>站在讲台上等，谁解答完谁举手</strong>。这时C、D举手，表示他们解答问题完毕，你下去依次检查C、D的答案，然后继续回到讲台上等。此时E、A又举手，然后去处理E和A。。。 </li>
+<li>这种就是IO复用模型，</li>
+</ol>
+<h1 id="select"><a href="#select" class="headerlink" title="select"></a>select</h1><p>linux提供的select相关函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/select.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/time.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> max_fd, fd_set *readset, fd_set *writeset, fd_set *exceptset, struct timeval *timeout)</span></span></span><br><span class="line"><span class="function"><span class="title">FD_ZERO</span><span class="params">(<span class="keyword">int</span> fd, fd_set* fds)</span>   <span class="comment">//清空集合</span></span></span><br><span class="line"><span class="function"><span class="title">FD_SET</span><span class="params">(<span class="keyword">int</span> fd, fd_set* fds)</span>    <span class="comment">//将给定的描述符加入集合</span></span></span><br><span class="line"><span class="function"><span class="title">FD_ISSET</span><span class="params">(<span class="keyword">int</span> fd, fd_set* fds)</span>  <span class="comment">//将给定的描述符从文件中删除  </span></span></span><br><span class="line"><span class="function"><span class="title">FD_CLR</span><span class="params">(<span class="keyword">int</span> fd, fd_set* fds)</span>    <span class="comment">//判断指定描述符是否在集合中</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="select的流程"><a href="#select的流程" class="headerlink" title="select的流程"></a>select的流程</h3><p>select的实现思路很直接。假如程序同时监视如下图的sock1、sock2和sock3三个socket，那么在调用select之后，操作系统把进程A分别加入这三个socket的等待队列中。</p>
+<p><img src="https://pic2.zhimg.com/80/v2-0cccb4976f8f2c2f8107f2b3a5bc46b3_720w.jpg" alt=""></p>
+<p>当任何一个socket收到数据后，中断程序将唤起进程。下图展示了sock2接收到了数据的处理流程。</p>
+<p><img src="https://pic2.zhimg.com/80/v2-85dba5430f3c439e4647ea4d97ba54fc_720w.jpg" alt=""></p>
+<p>所谓唤起进程，就是将进程从所有的等待队列中移除，加入到工作队列里面。如下图所示。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-a86b203b8d955466fff34211d965d9eb_720w.jpg" alt=""></p>
+<p>经由这些步骤，当进程A被唤醒后，它知道至少有一个socket接收了数据。程序只需遍历一遍socket列表，就可以得到就绪的socket。</p>
+<p>这种简单方式<strong>行之有效</strong>，在几乎所有操作系统都有对应的实现。</p>
+<h1 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h1><p>poll的机制与select类似，与select在本质上没有多大差别，管理多个描述符也是进行<strong>轮询</strong>，根据描述符的状态进行处理，但是<strong>poll没有最大文件描述符数量的限制</strong>。</p>
+<p>linux提供的select相关函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;poll.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span><span class="params">(struct pollfd fds[], <span class="keyword">nfds_t</span> nfds, <span class="keyword">int</span> timeout)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">pollfd</span> &#123;</span></span><br><span class="line">        <span class="keyword">int</span> fd;                         <span class="comment">// 需要被检测或选择的文件描述符</span></span><br><span class="line">        short events;                   <span class="comment">// 对文件描述符fd上感兴趣的事件</span></span><br><span class="line">        short revents;                  <span class="comment">// 文件描述符fd上当前实际发生的事件*/</span></span><br><span class="line">&#125; <span class="keyword">pollfd_t</span>;</span><br></pre></td></tr></table></figure>
+<h1 id="select和poll的缺点"><a href="#select和poll的缺点" class="headerlink" title="select和poll的缺点"></a>select和poll的缺点</h1><h2 id="select的缺点："><a href="#select的缺点：" class="headerlink" title="select的缺点："></a>select的缺点：</h2><ol>
+<li><strong>每次调用select，都需要把fd集合从用户态拷贝到内核态，这个开销在fd很多时会很大</strong></li>
+<li><strong>select返回的是含有整个句柄的数组，应用程序需要遍历整个数组才能发现哪些句柄发生了事件；</strong></li>
+<li><strong>单个进程能够监视的文件描述符的数量存在最大限制，通常是1024，当然可以更改数量，但由于select采用轮询的方式扫描文件描述符，文件描述符数量越多，性能越差；(在linux内核头文件中，有这样的定义：#define __FD_SETSIZE 1024)</strong></li>
+<li><strong>select的触发方式是水平触发，应用程序如果没有完成对一个已经就绪的文件描述符进行IO操作，那么之后每次select调用还是会将这些文件描述符通知进程。</strong></li>
+</ol>
+<h2 id="poll的缺点与改进"><a href="#poll的缺点与改进" class="headerlink" title="poll的缺点与改进"></a>poll的缺点与改进</h2><p>改进：</p>
+<ol>
+<li><strong>poll使用链表保存文件描述符，因此没有了监视文件描述符数量的限制</strong></li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li><strong>每次调用poll，都需要把fd集合从用户态拷贝到内核态，这个开销在fd很多时会很大</strong></li>
+<li><strong>poll返回的是含有整个句柄的数组，应用程序需要遍历整个数组才能发现哪些句柄发生了事件；</strong></li>
+<li><strong>poll的触发方式是水平触发，应用程序如果没有完成对一个已经就绪的文件描述符进行IO操作，那么之后每次poll调用还是会将这些文件描述符通知进程。</strong></li>
+</ol>
+<h1 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h1><p>​       epoll的设计和实现与select完全不同。epoll通过在Linux内核中申请一个简易的文件系统(文件系统一般用B+树数据结构实现)。把原先的select/poll调用分成了3个部分</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> <span class="built_in">size</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, struct epoll_event *event)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span><span class="params">(<span class="keyword">int</span> epfd, struct epoll_event *events,<span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout)</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="number">1.</span> 调用epoll_create()建立一个epoll对象(在epoll文件系统中为这个句柄对象分配资源)</span><br><span class="line"><span class="number">2.</span> 调用epoll_ctl向epoll对象中添加这<span class="number">100</span>万个连接的套接字</span><br><span class="line"><span class="number">3.</span> 调用epoll_wait收集发生的事件的连接</span><br></pre></td></tr></table></figure>
+<h2 id="creat"><a href="#creat" class="headerlink" title="creat"></a>creat</h2><p>当某一进程调用epoll_create方法时，Linux内核会创建一个eventpoll结构体，这个结构体中有两个成员与epoll的使用方式密切相关。eventpoll结构体如下所示：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">eventpoll</span>&#123;</span></span><br><span class="line">    ....</span><br><span class="line">    <span class="comment">/*红黑树的根节点，这颗树中存储着所有添加到epoll中的需要监控的事件*/</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rb_root</span>  <span class="title">rbr</span>;</span></span><br><span class="line">    <span class="comment">/*双链表中则存放着将要通过epoll_wait返回给用户的满足条件的事件*/</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">rdlist</span>;</span></span><br><span class="line">    ....</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>每一个epoll对象都有一个独立的eventpoll结构体，用于存放通过epoll_ctl方法向epoll对象中添加进来的事件。这些事件都会挂载在红黑树中，如此，重复添加的事件就可以通过红黑树而高效的识别出来(红黑树的插入时间效率是lgn，其中n为树的高度)。</p>
+<h1 id="ctl"><a href="#ctl" class="headerlink" title="ctl"></a>ctl</h1><p>创建epoll对象后，可以用epoll_ctl添加或删除所要监听的socket。以添加socket为例，如下图，如果通过epoll_ctl添加sock1、sock2和sock3的监视，内核会将eventpoll添加到这三个socket的等待队列中。</p>
+<p><img src="https://picb.zhimg.com/80/v2-b49bb08a6a1b7159073b71c4d6591185_720w.jpg" alt="添加所要监听的socket"></p>
+<p>当socket收到数据后，中断程序会操作eventpoll对象，而不是直接操作进程。</p>
+<p>而所有<strong>添加到epoll中的事件都会与设备(网卡)驱动程序建立回调关系，也就是说，当相应的事件发生时会调用这个回调方法</strong>。这个回调方法在内核中叫ep_poll_callback,它会将发生的事件添加到rdlist双链表中。</p>
+<p>在epoll中，对于每一个事件，都会建立一个epitem结构体，如下所示：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">epitem</span>&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rb_node</span>  <span class="title">rbn</span>;</span><span class="comment">//红黑树节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>    <span class="title">rdllink</span>;</span><span class="comment">//双向链表节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">epoll_filefd</span>  <span class="title">ffd</span>;</span>  <span class="comment">//事件句柄信息</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">eventpoll</span> *<span class="title">ep</span>;</span>    <span class="comment">//指向其所属的eventpoll对象</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> <span class="title">event</span>;</span> <span class="comment">//期待发生的事件类型</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdn.net/20150304162309832" alt=""></p>
+<p>上图应该是链表</p>
+<h2 id="wait"><a href="#wait" class="headerlink" title="wait"></a>wait</h2><p>​     当调用epoll_wait检查是否有事件发生时，只需要检查eventpoll对象中的rdlist双链表中是否有epitem元素即可。如果rdlist不为空，则把发生的事件复制到用户态，同时将事件数量返回给用户。</p>
+<h2 id="epoll解决select的缺点"><a href="#epoll解决select的缺点" class="headerlink" title="epoll解决select的缺点"></a>epoll解决select的缺点</h2><ol>
+<li>对于第一个缺点，epoll的解决方案在epoll_ctl函数中。每次注册新的事件到epoll句柄中时（在epoll_ctl中指定EPOLL_CTL_ADD），会把所有的fd拷贝进内核，而不是在epoll_wait的时候重复拷贝。epoll保证了每个fd在整个过程中只会拷贝一次。</li>
+<li>对于第二个缺点，epoll的解决方案不像select或poll一样每次都把当前进程轮流加入fd对应的socket等待队列中，而只在epoll_ctl时把当前线程挂一遍（这一遍必不可少）并为每个fd指定一个回调函数，当设备就绪，唤醒等待队列上的socket时，就会调用这个回调函数，而这个回调函数会把就绪的fd加入一个就绪链表。epoll_wait的工作实际上就是在这个就绪链表中查看有没有就绪的fd。</li>
+<li>对于第三个缺点，epoll没有这个限制，它所支持的FD上限是最大可以打开文件的数目，这个数字一般远大于2048,举个例子,在1GB内存的机器上大约是10万左右，具体数目可以cat /proc/sys/fs/file-max察看,一般来说这个数目和系统内存关系很大。</li>
+</ol>
+<h2 id="工作模式"><a href="#工作模式" class="headerlink" title="工作模式"></a>工作模式</h2><p>简单来讲，LT是epoll的默认操作模式，当epoll_wait函数检测到有事件发生并将通知应用程序，而应用程序不一定必须立即进行处理，这样epoll_wait函数再次检测到此事件的时候还会通知应用程序，直到事件被处理。</p>
+<p>而ET模式，只要epoll_wait函数检测到事件发生，通知应用程序立即进行处理，后续的epoll_wait函数将不再检测此事件。因此ET模式在很大程度上降低了同一个事件被epoll触发的次数，因此效率比LT模式高。</p>
+<h3 id="解释为什么epoll默认是LT的原因"><a href="#解释为什么epoll默认是LT的原因" class="headerlink" title="解释为什么epoll默认是LT的原因"></a>解释为什么epoll默认是LT的原因</h3><p>LT(level triggered)：LT是缺省的工作方式，并且同时支持block和no-block socket。在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，内核还是会继续通知你的，所以，这种模式编程出错误可能性要小一点。传统的select/poll都是这种模型的代表。</p>
+<p><a href="https://zhuanlan.zhihu.com/p/63179839" target="_blank" rel="noopener">epoll详解</a></p>
+<p><a href="https://www.cnblogs.com/Anker/p/3265058.html" target="_blank" rel="noopener">select、poll、epoll详解</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/2020/09/05/leetcode494-%E7%9B%AE%E6%A0%87%E5%92%8C/" rel="prev" title="leetcode494 目标和">
+      <i class="fa fa-chevron-left"></i> leetcode494 目标和
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/2020/09/07/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B/" rel="next" title="类加载过程">
+      类加载过程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概念"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多路IO复用"><span class="nav-number">2.</span> <span class="nav-text">多路IO复用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#select"><span class="nav-number">3.</span> <span class="nav-text">select</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#select的流程"><span class="nav-number">3.0.1.</span> <span class="nav-text">select的流程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#poll"><span class="nav-number">4.</span> <span class="nav-text">poll</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#select和poll的缺点"><span class="nav-number">5.</span> <span class="nav-text">select和poll的缺点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#select的缺点："><span class="nav-number">5.1.</span> <span class="nav-text">select的缺点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#poll的缺点与改进"><span class="nav-number">5.2.</span> <span class="nav-text">poll的缺点与改进</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#epoll"><span class="nav-number">6.</span> <span class="nav-text">epoll</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#creat"><span class="nav-number">6.1.</span> <span class="nav-text">creat</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ctl"><span class="nav-number">7.</span> <span class="nav-text">ctl</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#wait"><span class="nav-number">7.1.</span> <span class="nav-text">wait</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#epoll解决select的缺点"><span class="nav-number">7.2.</span> <span class="nav-text">epoll解决select的缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工作模式"><span class="nav-number">7.3.</span> <span class="nav-text">工作模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解释为什么epoll默认是LT的原因"><span class="nav-number">7.3.1.</span> <span class="nav-text">解释为什么epoll默认是LT的原因</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="100Cooke"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">100Cooke</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">100Cooke</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">184k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:47</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    // window.MathJax = {
+    //   loader: {
+    //
+    //       load: ['[tex]/mhchem'],
+    //
+    //     source: {
+    //       '[tex]/amsCd': '[tex]/amscd',
+    //       '[tex]/AMScd': '[tex]/amscd'
+    //     }
+    //   },
+    //   tex: {
+    //     inlineMath: {'[+]': [['$', '$']]},
+    //
+    //       packages: {'[+]': ['mhchem']},
+    //
+    //     tags: 'ams'
+    //   },
+    //   options: {
+    //     renderActions: {
+    //       findScript: [10, doc => {
+    //         document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+    //           const display = !!node.type.match(/; *mode=display/);
+    //           const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+    //           const text = document.createTextNode('');
+    //           node.parentNode.replaceChild(text, node);
+    //           math.start = {node: text, delim: '', n: 0};
+    //           math.end = {node: text, delim: '', n: 0};
+    //           doc.math.push(math);
+    //         });
+    //       }, '', false],
+    //       insertedScript: [200, () => {
+    //         document.querySelectorAll('mjx-container').forEach(node => {
+    //           let target = node.parentNode;
+    //           if (target.nodeName.toLowerCase() === 'li') {
+    //             target.parentNode.classList.add('has-jax');
+    //           }
+    //         });
+    //       }, '', false]
+    //     }
+    //   }
+    // };
+    window.MathJax = {
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        processEscapes: true
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@2.7.8/unpacked/MathJax.js?config=TeX-MML-AM_CHTML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  <script type="text/javascript" src="/lib/zclip/clipboard.js"></script>	
+<script type="text/javascript" src="/js/src/custom.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false});</script></body>
+</html>

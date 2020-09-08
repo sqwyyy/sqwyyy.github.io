@@ -165,6 +165,259 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/09/07/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/2020/09/07/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B/" class="post-title-link" itemprop="url">类加载过程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-07 21:11:36" itemprop="dateCreated datePublished" datetime="2020-09-07T21:11:36+08:00">2020-09-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-08 15:32:23" itemprop="dateModified" datetime="2020-09-08T15:32:23+08:00">2020-09-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="类的生命周期"><a href="#类的生命周期" class="headerlink" title="类的生命周期"></a>类的生命周期</h1><p>一个类完整的生命周期</p>
+<p><img src="https://camo.githubusercontent.com/68465e752e28fd5e7c6a6d442c19f05305c8f043/68747470733a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f323031392d31312f2545372542312542422545352538412541302545382542442542442545382542462538372545372541382538422d2545352541452538432545352539362538342e706e67" alt=""></p>
+<h1 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h1><p>Class 文件需要加载到虚拟机中之后才能运行和使用，那么虚拟机是如何加载这些 Class 文件呢？</p>
+<p>系统加载 Class 类型的文件主要三步:<strong>加载-&gt;连接-&gt;初始化</strong>。连接过程又可分为三步:<strong>验证-&gt;准备-&gt;解析</strong>。</p>
+<p><a href="https://camo.githubusercontent.com/9cb5a35384ed4da10079e3180e608828c7afe3a8/68747470733a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f323031392d362f2545372542312542422545352538412541302545382542442542442545382542462538372545372541382538422e706e67" target="_blank" rel="noopener"><img src="https://camo.githubusercontent.com/9cb5a35384ed4da10079e3180e608828c7afe3a8/68747470733a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f323031392d362f2545372542312542422545352538412541302545382542442542442545382542462538372545372541382538422e706e67" alt="img"></a></p>
+<h2 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h2><p>类加载过程的第一步，主要完成下面3件事情：</p>
+<ol>
+<li>通过全类名获取定义此类的二进制字节流</li>
+<li>将字节流所代表的静态存储结构转换为方法区的运行时数据结构</li>
+<li>在内存中生成一个代表该类的 Class 对象,作为方法区这些数据的访问入口</li>
+</ol>
+<p>虚拟机规范多上面这3点并不具体，因此是非常灵活的。比如：”通过全类名获取定义此类的二进制字节流” 并没有指明具体从哪里获取、怎样获取。比如：比较常见的就是从 ZIP 包中读取（日后出现的JAR、EAR、WAR格式的基础）、其他文件生成（典型应用就是JSP）等等。</p>
+<p><strong>一个非数组类的加载阶段（加载阶段获取类的二进制字节流的动作）是可控性最强的阶段，这一步我们可以去完成还可以自定义类加载器去控制字节流的获取方式（重写一个类加载器的 <code>loadClass()</code> 方法）。数组类型不通过类加载器创建，它由 Java 虚拟机直接创建。</strong></p>
+<p>类加载器、双亲委派模型也是非常重要的知识点，这部分内容会在后面的文章中单独介绍到。</p>
+<p>加载阶段和连接阶段的部分内容是交叉进行的，加载阶段尚未结束，连接阶段可能就已经开始了。</p>
+<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p><a href="https://camo.githubusercontent.com/6175c9d001e4fb2bc0c1c49c0bd4a8d280e90846/68747470733a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f323031392d362f2545392541412538432545382541462538312545392539382542362545362541452542352e706e67" target="_blank" rel="noopener"><img src="https://camo.githubusercontent.com/6175c9d001e4fb2bc0c1c49c0bd4a8d280e90846/68747470733a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f323031392d362f2545392541412538432545382541462538312545392539382542362545362541452542352e706e67" alt="验证阶段示意图"></a></p>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p><strong>准备阶段是正式为类变量分配内存并设置类变量初始值的阶段</strong>，这些内存都将在方法区中分配。对于该阶段有以下几点需要注意：</p>
+<ol>
+<li>这时候进行内存分配的仅包括类变量（static），而不包括实例变量，实例变量会在对象实例化时随着对象一块分配在 Java 堆中。</li>
+<li>这里所设置的初始值”通常情况”下是数据类型默认的零值（如0、0L、null、false等），比如我们定义了<code>public static int value=111</code> ，那么 value 变量在准备阶段的初始值就是 0 而不是111（初始化阶段才会赋值）。特殊情况：比如给 value 变量加上了 fianl 关键字<code>public static final int value=111</code> ，那么准备阶段 value 的值就被赋值为 111。</li>
+</ol>
+<p><strong>基本数据类型的零值：</strong></p>
+<p><a href="https://camo.githubusercontent.com/689e28f80449f103b217a87affc6c14a10974722/68747470733a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f323031392d362f2545352539462542412545362539432541432545362539352542302545362538442541452545372542312542422545352539452538422545372539412538342545392539422542362545352538302542432e706e67" target="_blank" rel="noopener"><img src="https://camo.githubusercontent.com/689e28f80449f103b217a87affc6c14a10974722/68747470733a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f323031392d362f2545352539462542412545362539432541432545362539352542302545362538442541452545372542312542422545352539452538422545372539412538342545392539422542362545352538302542432e706e67" alt="基本数据类型的零值"></a></p>
+<h2 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h2><p>解析阶段是虚拟机将常量池内的符号引用替换为直接引用的过程。解析动作主要针对类或接口、字段、类方法、接口方法、方法类型、方法句柄和调用限定符7类符号引用进行。</p>
+<p>符号引用就是一组符号来描述目标，可以是任何字面量。<strong>直接引用</strong>就是直接指向目标的指针、相对偏移量或一个间接定位到目标的句柄。在程序实际运行时，只有符号引用是不够的，举个例子：在程序执行方法时，系统需要明确知道这个方法所在的位置。Java 虚拟机为每个类都准备了一张方法表来存放类中所有的方法。当需要调用一个类的方法的时候，只要知道这个方法在方发表中的偏移量就可以直接调用该方法了。通过解析操作符号引用就可以直接转变为目标方法在类中方法表的位置，从而使得方法可以被调用。</p>
+<p>综上，解析阶段是虚拟机将常量池内的符号引用替换为直接引用的过程，也就是得到类或者字段、方法在内存中的指针或者偏移量。</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>初始化是类加载的最后一步，也是真正执行类中定义的 Java 程序代码(字节码)，初始化阶段是执行类构造器 <code>()</code>方法的过程。</p>
+<p>对于<code>（）</code> 方法的调用，虚拟机会自己确保其在多线程环境中的安全性。因为 <code>（）</code> 方法是带锁线程安全，所以在多线程环境下进行类初始化的话可能会引起死锁，并且这种死锁很难被发现。</p>
+<p>对于初始化阶段，虚拟机严格规范了有且只有5种情况下，必须对类进行初始化(只有主动去使用类才会初始化类)：</p>
+<ol>
+<li>当遇到 new 、 getstatic、putstatic或invokestatic 这4条直接码指令时，比如 new 一个类，读取一个静态字段(未被 final 修饰)、或调用一个类的静态方法时。<ul>
+<li>当jvm执行new指令时会初始化类。即当程序创建一个类的实例对象。</li>
+<li>当jvm执行getstatic指令时会初始化类。即程序访问类的静态变量(不是静态常量，常量会被加载到运行时常量池)。</li>
+<li>当jvm执行putstatic指令时会初始化类。即程序给类的静态变量赋值。</li>
+<li>当jvm执行invokestatic指令时会初始化类。即程序调用类的静态方法。</li>
+</ul>
+</li>
+<li>使用 <code>java.lang.reflect</code> 包的方法对类进行反射调用时如Class.forname(“…”),newInstance()等等。 ，如果类没初始化，需要触发其初始化。</li>
+<li>初始化一个类，如果其父类还未初始化，则先触发该父类的初始化。</li>
+<li>当虚拟机启动时，用户需要定义一个要执行的主类 (包含 main 方法的那个类)，虚拟机会先初始化这个类。</li>
+<li>MethodHandle和VarHandle可以看作是轻量级的反射调用机制，而要想使用这2个调用， 就必须先使用findStaticVarHandle来初始化要调用的类。</li>
+<li>当一个接口中定义了JDK8新加入的默认方法（被default关键字修饰的接口方法）时，如果有这个接口的实现类发生了初始化，那该接口要在其之前被初始化。</li>
+</ol>
+<h2 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h2><p>卸载类即该类的Class对象被GC。</p>
+<p>卸载类需要满足3个要求:</p>
+<ol>
+<li>该类的所有的实例对象都已被GC，也就是说堆不存在该类的实例对象。</li>
+<li>该类没有在其他任何地方被引用</li>
+<li>该类的类加载器的实例已被GC</li>
+</ol>
+<p>所以，在JVM生命周期类，由jvm自带的类加载器加载的类是不会被卸载的。但是由我们自定义的类加载器加载的类是可能被卸载的。</p>
+<p>只要想通一点就好了，jdk自带的BootstrapClassLoader,PlatformClassLoader,AppClassLoader负责加载jdk提供的类，所以它们(类加载器的实例)肯定不会被回收。而我们自定义的类加载器的实例是可以被回收的，所以使用我们自定义加载器加载的类是可以被卸载掉的。</p>
+<h1 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h1><p>​       <strong>通过一个类的全限定名来获取描述此类的二进制字节流这个动作放到Java虚拟机外部去实现，以便让应用程序自己决定如何去获取所需要的类</strong>。实现这个动作的代码模块称为<strong>“类加载器”</strong>。</p>
+<p>类加载器:</p>
+<p><img src="https://picb.zhimg.com/80/v2-9e3254602608f3d224ac1dd3ab816075_720w.jpg" alt=""></p>
+<ul>
+<li><strong>BootstrapClassLoader</strong>：启动类类加载器，它用来加载<JAVA_HOME>/jre/lib路径,<strong>-</strong>Xbootclasspath参数指定的路径以<JAVA_HOME>/jre/classes中的类。BootStrapClassLoader是由c++实现的。</li>
+<li><strong>ExtClassLoader</strong>：拓展类类加载器，它用来加载<JAVA_HOME>/jre/lib/ext路径以及java.ext.dirs系统变量指定的类路径下的类。</li>
+<li><strong>AppClassLoader</strong>：应用程序类类加载器，它主要加载应用程序ClassPath下的类（包含jar包中的类）。它是java应用程序默认的类加载器。</li>
+<li><strong>用户自定义类加载器</strong>：用户根据自定义需求，自由的定制加载的逻辑，继承AppClassLoader，仅仅覆盖findClass（）即将继续遵守双亲委派模型。</li>
+<li><strong>*ThreadContextClassLoader</strong>：线程上下文加载器，它不是一个新的类型，更像一个类加载器的角色，ThreadContextClassLoader可以是上述类加载器的任意一种，但往往是AppClassLoader。</li>
+</ul>
+<h2 id="双亲委派模式"><a href="#双亲委派模式" class="headerlink" title="双亲委派模式"></a>双亲委派模式</h2><h3 id="ClassLoader-传递性"><a href="#ClassLoader-传递性" class="headerlink" title="ClassLoader 传递性"></a>ClassLoader 传递性</h3><p>​        程序在运行过程中，遇到了一个未知的类，它会选择哪个 ClassLoader 来加载它呢？虚拟机的策略是使用调用者 Class 对象的 ClassLoader 来加载当前未知的类。何为调用者 Class 对象？就是在遇到这个未知的类时，虚拟机肯定正在运行一个方法调用（静态方法或者实例方法），这个方法挂在哪个类上面，那这个类就是调用者 Class 对象。前面我们提到每个 Class 对象里面都有一个 classLoader 属性记录了当前的类是由谁来加载的。</p>
+<p>因为 ClassLoader 的传递性，所有延迟加载的类都会由初始调用 main 方法的这个 ClassLoader 全全负责，它就是 AppClassLoader。</p>
+<h3 id="双亲委派"><a href="#双亲委派" class="headerlink" title="双亲委派"></a>双亲委派</h3><p>前面提到 AppClassLoader 只负责加载 Classpath 下面的类库，如果遇到没有加载的系统类库怎么办，AppClassLoader 必须将系统类库的加载工作交给 BootstrapClassLoader 和 ExtensionClassLoader 来做，这就是我们常说的「双亲委派」。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-6d038f875790e1cdbf17a9aac11961e3_720w.jpg" alt=""></p>
+<p>AppClassLoader 在加载一个未知的类名时，它并不是立即去搜寻 Classpath，它会首先将这个类名称交给 ExtensionClassLoader 来加载，如果 ExtensionClassLoader 可以加载，那么 AppClassLoader 就不用麻烦了。否则它就会搜索 Classpath 。</p>
+<h2 id="双亲委派模式的好处"><a href="#双亲委派模式的好处" class="headerlink" title="双亲委派模式的好处"></a>双亲委派模式的好处</h2><p><strong>双亲委派模型能保证基础类仅加载一次，不会让jvm中存在重名的类。比如String.class，每次加载都委托给父加载器，最终都是BootstrapClassLoader，都保证java核心类都是BootstrapClassLoader加载的，保证了java的安全与稳定性</strong>。</p>
+<h2 id="破坏双亲委托模式"><a href="#破坏双亲委托模式" class="headerlink" title="破坏双亲委托模式"></a>破坏双亲委托模式</h2><p><a href="https://zhuanlan.zhihu.com/p/54693308" target="_blank" rel="noopener">来源</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/51374915" target="_blank" rel="noopener">来源</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/101031254" target="_blank" rel="noopener">new一个对象发生的事</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/09/06/select-poll-epoll/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/2020/09/06/select-poll-epoll/" class="post-title-link" itemprop="url">select poll epoll</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-06 20:57:39" itemprop="dateCreated datePublished" datetime="2020-09-06T20:57:39+08:00">2020-09-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-07 11:11:25" itemprop="dateModified" datetime="2020-09-07T11:11:25+08:00">2020-09-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><p>​      select，poll，epoll都是IO多路复用的机制。I/O多路复用就通过一种机制，可以监视多个描述符，一旦某个描述符就绪（一般是读就绪或者写就绪），能够通知程序进行相应的读写操作。<strong>但select，poll，epoll本质上都是同步I/O，因为他们都需要在读写事件就绪后自己负责进行读写，也就是说这个读写过程是阻塞的</strong>，而异步I/O则无需自己负责进行读写，异步I/O的实现会负责把数据从内核拷贝到用户空间。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/2020/09/06/select-poll-epoll/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/09/05/leetcode494-%E7%9B%AE%E6%A0%87%E5%92%8C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -190,7 +443,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-09-05 22:45:58 / 修改时间：22:49:17" itemprop="dateCreated datePublished" datetime="2020-09-05T22:45:58+08:00">2020-09-05</time>
+              <time title="创建时间：2020-09-05 22:45:58 / 修改时间：22:52:48" itemprop="dateCreated datePublished" datetime="2020-09-05T22:45:58+08:00">2020-09-05</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -281,7 +534,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-09-05 22:35:29 / 修改时间：22:44:24" itemprop="dateCreated datePublished" datetime="2020-09-05T22:35:29+08:00">2020-09-05</time>
+              <time title="创建时间：2020-09-05 22:35:29 / 修改时间：22:52:48" itemprop="dateCreated datePublished" datetime="2020-09-05T22:35:29+08:00">2020-09-05</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -377,7 +630,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-09-05 22:30:44 / 修改时间：22:36:02" itemprop="dateCreated datePublished" datetime="2020-09-05T22:30:44+08:00">2020-09-05</time>
+              <time title="创建时间：2020-09-05 22:30:44 / 修改时间：22:52:48" itemprop="dateCreated datePublished" datetime="2020-09-05T22:30:44+08:00">2020-09-05</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -465,10 +718,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-09-03 15:26:54 / 修改时间：16:02:53" itemprop="dateCreated datePublished" datetime="2020-09-03T15:26:54+08:00">2020-09-03</time>
+              <time title="创建时间：2020-09-03 15:26:54" itemprop="dateCreated datePublished" datetime="2020-09-03T15:26:54+08:00">2020-09-03</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-08 16:26:09" itemprop="dateModified" datetime="2020-09-08T16:26:09+08:00">2020-09-08</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -485,14 +744,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
+              <span>2.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -504,101 +763,22 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <a id="more"></a>
-<h1 id="HASHMAP"><a href="#HASHMAP" class="headerlink" title="HASHMAP"></a>HASHMAP</h1><ol>
+          <h1 id="HASHMAP"><a href="#HASHMAP" class="headerlink" title="HASHMAP"></a>HASHMAP</h1><ol>
 <li>HashMap 底层数据结构？为什么不直接用红黑树，还要用链表？</li>
 <li>HashMap 什么时候扩容？装载因子和临界值默认是多少？扩容成多大？为什么容量是2的幂次方？</li>
 <li>线程安全的Map？分段锁是如何实现的？JDK 1.8之后有哪些优化？</li>
 <li>HashMap 的线程安全性</li>
 <li>hashmap的实现，怎么扩容的</li>
+<li>Hashmap扩容机制，为什么hashmap定义时一般初始化一个大小？</li>
 </ol>
-<h1 id="JAVA"><a href="#JAVA" class="headerlink" title="JAVA"></a>JAVA</h1><ol>
-<li>finally 中 return 会发生什么？</li>
-<li>Java参数传递是值传递还是引用传递并举例说明。</li>
-<li>有哪些常见的Exception，怎么避免空指针异常</li>
-<li>ArrayList、LinkedList</li>
-<li>ArrayList源码相关，怎么扩容的，扩容是不是一定1.5倍？</li>
-</ol>
-<h1 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h1><ol>
-<li>线程池实现原理？实现方式？拒绝策略？阻塞队列？</li>
-<li>并发？Lock和Synchronized区别？AQS实现？锁优化？</li>
-<li>synchronized原理</li>
-<li>volatile</li>
-<li>多线程的优缺点</li>
-<li>多线程会产生的问题？死锁？（怎么解决死锁）内存泄露？（如何解决内存泄露，举个例子，我：Threadlocal，不会解决）</li>
-<li>有哪些锁？讲一下乐观锁和悲观锁的区别</li>
-<li>公平锁与非公平锁是怎么实现的，使用非公平锁，当前获取不到锁，加入等待队列，之后会怎么处理？</li>
-</ol>
-<h1 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h1><ol>
-<li>堆内部空间的划分？</li>
-<li>垃圾回收算法？垃圾回收器？CMS？</li>
-<li>类加载？双亲委派？为什么？破坏双亲委派？</li>
-<li>一个父类加载器能不能加载一个子类加载器，为什么</li>
-<li>java 对象的创建过程</li>
-<li></li>
-<li>垃圾回收为什么分区？分为几个区？各区的占比？为什么要survior区？survior为什么分为from和to区？ </li>
-<li>如何减少Full GC的次数，比较消耗内存？（不会，面试官说增大老年区内存大小，可以设置）</li>
-</ol>
-<h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><ol>
-<li>对数据库三范式的理解，并举例实际的例子说明为什么不满足</li>
-<li>MySQL中有一张表，id和name，name有很多重复行，怎么去除重复的数据？</li>
-<li>怎么防止SQL注入，举一个SQL注入的实例</li>
-<li>索引怎么优化</li>
-<li>B+树为什么适合做索引？和红黑树，B树相比，优点是什么（我自己总结了四点，从速度、稳定性、区间查询、全表扫描来分析）</li>
-<li>Mysql的存储引擎？</li>
-<li>数据库的隔离级别？每一级别出现的问题？</li>
-<li>解释下聚簇索引和非聚簇索引</li>
-<li>如果有abc联合索引，只查c会怎样，只查ac会怎样，为什么</li>
-<li>联合索引底层结构</li>
-<li>非聚簇索引会查几次</li>
-<li>数据库是如何做范围读取的？mysql中记录是如何存储的</li>
-<li>如何保证数据库断电不丢失？redo日志，先写日志，掉电了，如何确定数据有没有写到盘上。redo日志重做的细节（如何确定数据有没有写到盘上:  查看页结构File Header 头部的Fil_Page_LSN字段是否在checkpoint_lsn之后）</li>
-</ol>
-<h1 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h1><ol>
-<li>关闭浏览器之后重新输入url后，还会保存登录信息吗</li>
-<li>http get/post区别</li>
-<li>HTTP原理</li>
-<li>tcp三次握手之后如果客户端断网了怎么办</li>
-<li>tcp三次握手</li>
-<li>http长短连接</li>
-</ol>
-<h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><ol>
-<li>进程间的通信方式</li>
-<li>共享内存</li>
-<li>协程</li>
-<li>解释虚拟内存</li>
-<li>缺页中断</li>
-</ol>
-<h1 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h1><ol>
-<li>redis基本数据类型</li>
-<li>怎么实现分布式锁</li>
-<li>redis分布式锁有什么缺点，怎么解决</li>
-<li>Redis 集群 主从</li>
-<li>布隆过滤器</li>
-<li>Redis缓存怎么更新,以及怎么保证和数据库的一致性</li>
-<li>zset和list使用上的区别</li>
-<li>zset底层结构，如何实现范围查找</li>
-<li>Redis 发布订阅模式如何实现</li>
-</ol>
-<h1 id="spring"><a href="#spring" class="headerlink" title="spring"></a>spring</h1><ol>
-<li>spring一个事务中调用另外一个事务，另一个事务发生异常会怎么样</li>
-<li>Bean的生命周期是什么</li>
-<li>Spring运用了哪些设计模式（ioc单例、aop动态代理）</li>
-<li>Spring AOP默认的动态代理是什么？想使用CGlib怎么设置（配置文件）？</li>
-<li>什么时候用JDK动态代理，什么时候用CGlib动态代理？</li>
-<li>Spring IOC底层实现？工厂+反射。</li>
-<li>BeanFactory和ApplicationContext的区别是什么？</li>
-<li>SpringBoot 启动流程，与 Spring 的区别</li>
-</ol>
-<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><ol>
-<li>海量数据求频率最多的100个</li>
-<li>select和epoll的区别</li>
-<li>红黑树是如何旋转调整的？红黑树的性质？各种操作的时间复杂度？</li>
-<li>快排具体实现，最差情况下时间复杂度，什么情况是最差情况</li>
-<li>加密算法说几个</li>
-<li>token怎么保证安全</li>
-</ol>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/2020/09/03/%E9%9D%A2%E7%BB%8F%E6%95%B4%E7%90%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -965,184 +1145,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/08/31/BigDecimal/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="100Cooke">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/2020/08/31/BigDecimal/" class="post-title-link" itemprop="url">BigDecimal</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-08-31 19:44:14 / 修改时间：19:55:28" itemprop="dateCreated datePublished" datetime="2020-08-31T19:44:14+08:00">2020-08-31</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">JAVA基础知识</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>float和double类型主要是为了科学计算和工程计算而设计的。他们执行二进制浮点运算，这是为了在广泛的数字范围上<strong>提供较为精确的快速近似计算而精心设计的</strong>。然而，它们并没有提供完全精确的结果，所以我们不应该用于精确计算的场合。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/2020/08/31/BigDecimal/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/08/31/double%E7%B2%BE%E5%BA%A6%E4%B8%8D%E5%87%86%E5%A4%87%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="100Cooke">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/2020/08/31/double%E7%B2%BE%E5%BA%A6%E4%B8%8D%E5%87%86%E5%A4%87%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">double精度不准备问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-08-31 19:27:13 / 修改时间：19:55:28" itemprop="dateCreated datePublished" datetime="2020-08-31T19:27:13+08:00">2020-08-31</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">JAVA基础知识</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>​       float和double类型主要是为了科学计算和工程计算而设计的。他们执行二进制浮点运算，这是为了在广泛的数字范围上<strong>提供较为精确的快速近似计算而精心设计的</strong>。然而，它们并没有提供完全精确的结果，所以我们不应该用于精确计算的场合。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/2020/08/31/double%E7%B2%BE%E5%BA%A6%E4%B8%8D%E5%87%86%E5%A4%87%E9%97%AE%E9%A2%98/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1214,14 +1216,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -1264,12 +1266,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">175k</span>
+    <span title="站点总字数">184k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:39</span>
+    <span title="站点阅读时长">2:47</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
