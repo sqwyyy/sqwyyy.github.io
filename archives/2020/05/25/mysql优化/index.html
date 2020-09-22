@@ -28,7 +28,7 @@
 <meta property="og:description" content="选取最适用的字段属性">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-05-25T13:06:50.000Z">
-<meta property="article:modified_time" content="2020-05-25T13:12:09.990Z">
+<meta property="article:modified_time" content="2020-09-22T08:16:33.727Z">
 <meta property="article:author" content="100Cooke">
 <meta name="twitter:card" content="summary">
 
@@ -192,10 +192,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-05-25 21:06:50 / 修改时间：21:12:09" itemprop="dateCreated datePublished" datetime="2020-05-25T21:06:50+08:00">2020-05-25</time>
+              <time title="创建时间：2020-05-25 21:06:50" itemprop="dateCreated datePublished" datetime="2020-05-25T21:06:50+08:00">2020-05-25</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-22 16:16:33" itemprop="dateModified" datetime="2020-09-22T16:16:33+08:00">2020-09-22</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -212,14 +218,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5.7k</span>
+              <span>6.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
+              <span>6 分钟</span>
             </span>
 
         </div>
@@ -252,10 +258,10 @@
 <li><p>持续性。也称永久性，<strong>指一个事务一旦提交，它对数据库中的数据的改变就应该是永久性的</strong>。接下来的其它操作或故障不应该对其执行结果有任何影响。</p>
 <h2 id="事务并发可能出现的问题"><a href="#事务并发可能出现的问题" class="headerlink" title="事务并发可能出现的问题"></a>事务并发可能出现的问题</h2></li>
 <li>脏读：事务A读取了事务B更新的数据，然后B回滚操作，那么A读取到的数据是脏数据</li>
-<li>不可重复读：在一个事务的两次查询之中数据不一致，事务 A 多次读取同一数据，事务 B 在事务A多次读取的过程中，对数据作了更新并提交，导致事务A多次读取同一数据时，结果因此本事务先后两次读到的数据结果会不一致。</li>
-<li>幻读：例如有一个事务查询了几列(Row)数据，而另一个事务却在此时插入了新的几列数据，先前的事务在接下来的查询中，就会发现有几列数据是它先前所没有的。</li>
+<li>不可重复读：<strong>在一个事务的两次查询之中数据不一致</strong>，事务 A 多次读取同一数据，事务 B 在事务A多次读取的过程中，对数据作了更新并提交，导致事务A多次读取同一数据时，结果因此本事务先后两次读到的数据结果会不一致。</li>
+<li>幻读：例如<strong>有一个事务查询了几列(Row)数据，而另一个事务却在此时插入了新的几列数据，先前的事务在接下来的查询中，就会发现有几列数据是它先前所没有的</strong>。</li>
 </ol>
-<p>小结：不可重复读的和幻读很容易混淆，不可重复读侧重于修改，幻读侧重于新增或删除。解决不可重复读的问题只需锁住满足条件的行，解决幻读需要锁表。</p>
+<p>小结：不可重复读的和幻读很容易混淆，<strong>不可重复读侧重于修改，幻读侧重于新增或删除</strong>。解决不可重复读的问题只需锁住满足条件的行，解决幻读需要锁表。</p>
 <h2 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h2><h3 id="Read-Uncommitted（读取未提交内容）-RU"><a href="#Read-Uncommitted（读取未提交内容）-RU" class="headerlink" title="Read Uncommitted（读取未提交内容） RU"></a>Read Uncommitted（读取未提交内容） RU</h3><p>在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。</p>
 <h3 id="Read-Committed（读取提交内容）RC"><a href="#Read-Committed（读取提交内容）RC" class="headerlink" title="Read Committed（读取提交内容）RC"></a>Read Committed（读取提交内容）RC</h3><p>这是大多数数据库系统的默认隔离级别（但不是MySQL默认的）。它满足了隔离的简单定义：一个事务只能看见已经提交事务所做的改变。这种隔离级别 也支持所谓的不可重复读（Nonrepeatable Read），因为同一事务的其他实例在该实例处理其间可能会有新的commit，所以同一select可能返回不同结果。</p>
 <h3 id="Repeatable-Read（可重读）RR"><a href="#Repeatable-Read（可重读）RR" class="headerlink" title="Repeatable Read（可重读）RR"></a>Repeatable Read（可重读）RR</h3><p>这是MySQL的默认事务隔离级别，它确保同一事务的多个实例在并发读取数据时，会看到同样的数据行。不过理论上，这会导致另一个棘手的问题：幻读 （Phantom Read）。</p>
@@ -300,21 +306,41 @@
 </div>
 <h1 id="MVCC原理"><a href="#MVCC原理" class="headerlink" title="MVCC原理"></a>MVCC原理</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>mvcc是多版本并发控制 ，它是数据库管理系统一种常见的并发控制。</p>
 <ul>
-<li>事务版本号:每次事务开启前都会从数据库获得一个自增长的事务ID，可以从事务ID判断事务的执行先后顺序。</li>
+<li><p>事务版本号:每次事务开启前都会从数据库获得一个自增长的事务ID，可以从事务ID判断事务的执行先后顺序。</p>
+</li>
 <li><p>表格的隐藏列</p>
 <ul>
-<li>DB_TRX_ID: 记录操作该数据事务的事务ID；</li>
+<li>DB_TRX_ID: 记录操作该数据事务的事务版本号；</li>
 <li>DB_ROLL_PTR：指向上一个版本数据在undo log 里的位置指针；</li>
-<li>DB_ROW_ID: 隐藏ID ，当创建表没有合适的索引作为聚集索引时，会用该隐藏ID创建聚集索引;</li>
-<li>undoLog: 事务的回滚日志</li>
-<li><p>Read view: 在innodb 中每个SQL语句执行前都会得到一个read_view</p>
+<li><p>DB_ROW_ID: 隐藏ID ，当创建表没有合适的索引作为聚集索引时，会用该隐藏ID创建聚集索引;</p>
+</li>
+<li><p>undo Log: 事务的回滚日志</p>
+</li>
+<li><p>Read view: 在innodb 中每个SQL语句执行前都会得到一个read_view，<strong>Read View中保存的是系统中当前不应该被本事务看到的其他事务id列表</strong>。</p>
 <ul>
-<li><p>trx_ids: trx_ids为活跃事务id列表，即Read View初始化时当前未提交的事务列表。所以当进行RR读的时候，trx_ids中的事务对于本事务是不可见的（除了自身事务，自身事务对于表的修改对于自己当然是可见的）</p>
-</li>
-<li><p>low_limit_id: 当前最大的事务号 + 1，事务号 &gt;= low_limit_id，对于当前Read View都是不可见的。理解起来就是在创建Read View视图之后创建的事务对于该事务肯定是不可见的。</p>
-</li>
-<li>up_limit_id: 当前已经提交的事务号 + 1，事务号 &lt; up_limit_id ，对于当前Read View都是可见的。理解起来就是创建Read View视图的时候，之前已经提交的事务对于该事务肯定是可见的。</li>
+<li>活跃事务id列表：<strong>即Read View初始化时当前未提交的事务列表</strong>。所以当进行RR读的时候，活跃事务id列表中的事务对于本事务是不可见的（除了自身事务，自身事务对于表的修改对于自己当然是可见的）</li>
+<li><strong>low_limit_id</strong>: 创建Read View时<strong>当前最大的事务号 + 1</strong></li>
+<li><strong>up_limit_id</strong>: 创建Read View时<strong>当前最小的事务号</strong></li>
+<li><strong>creator_trx_id:</strong> 创建当前read view的事务版本号；</li>
 </ul>
+</li>
+</ul>
+</li>
+<li><p>Read View匹配条件</p>
+<ul>
+<li><p><strong>数据事务ID &lt; up_limit_id 则显示</strong></p>
+</li>
+<li><p><strong>数据事务ID &gt;= low_limit_id 则不显示</strong></p>
+</li>
+<li><p>up_limit_id &lt;=  数据事务ID &lt;= low_limit_id <strong>则与活跃事务id列表匹配</strong></p>
+<ul>
+<li><strong>如果事务ID不存在于活跃事务id列表</strong>（则说明read view产生的时候事务已经commit了），这种情况数据则<strong>可以显示</strong></li>
+<li><strong>如果事务ID存在活跃事务id列表</strong>     则说明read view产生的时候数据还没有提交，但是<strong>如果数据的事务ID等于creator_trx_id</strong> ，<strong>那么说明这个数据就是当前事务自己生成的</strong>，自己生成的数据自己当然能看见，<strong>所以这种情况下此数据也是可以显示的</strong>。</li>
+<li><strong>如果事务ID既存在活跃事务id列表而且又不等于creator_trx_id</strong>      那就说明read view产生的时候数据还没有提交，又不是自己生成的，<strong>所以这种情况下此数据不能显示</strong>。</li>
+</ul>
+</li>
+<li><p><strong>不满足read view条件时候，从undo log里面获取数据</strong></p>
+<p>当数据的事务ID不满足read view条件时候，从undo log里面获取数据的历史版本，然后数据历史版本事务号回头再来和read view 条件匹配 ，直到找到一条满足条件的历史数据，或者找不到则返回空结果；</p>
 </li>
 </ul>
 </li>
@@ -340,14 +366,16 @@
 </ul>
 <ol>
 <li>行锁:开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低，并发度也最高。行级锁<strong>分为共享锁和排他锁。</strong></li>
-<li>页锁:开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之间，并发度一般。</li>
 <li>表锁:开销小，加锁快；不会出现死锁；锁定粒度大，发出锁冲突的概率最高，并发度最低。<br>表级锁定分为表<strong>共享读锁（共享锁）与表独占写锁（排他锁）</strong></li>
 </ol>
 <p>InnoDB行锁是通过<strong>给索引上的索引项加锁</strong>来实现的，InnoDB这种行锁实现特点意味着：只有通过索引条件检索数据，InnoDB才使用行级锁，否则，InnoDB将使用表锁！(innodb和myISAM都不支持页锁)</p>
-<h3 id="锁的类型"><a href="#锁的类型" class="headerlink" title="锁的类型"></a>锁的类型</h3><p>共享锁(S锁):假设事务T1对数据A加上共享锁，那么事务T2可以读数据A，不能修改数据A。<br>排他锁(X锁):假设事务T1对数据A加上排他锁，那么事务T2不能读数据A，不能修改数据A。<br>我们<strong>通过update、delete等语句加上的锁都是行级别的锁</strong>。只有LOCK TABLE … READ和LOCK TABLE … WRITE才能申请表级别的锁。<br>意向共享锁(IS锁):一个事务在获取（任何一行/或者全表）S锁之前，一定会先在所在的表上加IS锁。<br>意向排他锁(IX锁):一个事务在获取（任何一行/或者全表）X锁之前，一定会先在所在的表上加IX锁。</p>
+<h3 id="锁的类型"><a href="#锁的类型" class="headerlink" title="锁的类型"></a>锁的类型</h3><p>InnoDB主要有2种锁：行级锁，意向锁</p>
+<p><strong>共享锁(S锁)</strong>：假设事务T1对数据A加上共享锁，那么事务T2可以读数据A，不能修改数据A。<br><strong>排他锁(X锁)</strong>：假设事务T1对数据A加上排他锁，那么事务T2不能读数据A，不能修改数据A。<br>我们<strong>通过update、delete等语句加上的锁都是行级别的锁</strong>。只有LOCK TABLE … READ和LOCK TABLE … WRITE才能申请表级别的锁。<br><strong>意向共享锁(IS锁)</strong>：一个事务在获取（任何一行/或者全表）S锁之前，一定会先在所在的表上加IS锁。<br><strong>意向排他锁(IX锁)</strong>：一个事务在获取（任何一行/或者全表）X锁之前，一定会先在所在的表上加IX锁。</p>
+<p>意向锁的主要用途是为了表达某个事务正在锁定一行或者将要锁定一行数据。</p>
+<p>假设事务T1，用X锁来锁住了表上的几条记录，那么此时表上存在IX锁，即意向排他锁。那么此时事务T2要进行<code>LOCK TABLE … WRITE</code>的表级别锁的请求，可以直接根据意向锁是否存在而判断是否有锁冲突。<strong>意向排它锁存在的价值在于节约InnoDB对于锁的定位和处理性能</strong>。</p>
 <h3 id="加锁算法"><a href="#加锁算法" class="headerlink" title="加锁算法"></a>加锁算法</h3><ol>
-<li>行锁:该锁是对索引记录进行加锁,innodb中一定存在聚簇索引，所以行锁最终在聚簇索引上.</li>
-<li>间隙锁:是对索引的间隙加锁，其目的只有一个，防止其他事物插入数据。在<strong>Read Committed隔离级别下，隔离级别比Read Committed低的情况下，都不会使用间隙锁</strong></li>
+<li>行锁：<strong>该锁是对索引记录进行加锁</strong>,innodb中一定存在聚簇索引，所以行锁最终在聚簇索引上.</li>
+<li>间隙锁：是对索引的间隙加锁，其目的只有一个，防止其他事务插入数据。在<strong>Read Committed隔离级别下，隔离级别比Read Committed低的情况下，都不会使用间隙锁</strong></li>
 <li>Next-Key Locks：这个理解为行锁+索引前面的间隙锁。<br>比如一个索引包含值，10，11，13和20。那么，间隙锁的范围如下<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(negative infinity, 10](负无穷)</span><br><span class="line">(10, 11]</span><br><span class="line">(11, 13]</span><br><span class="line">(13, 20]</span><br><span class="line">(20, positive infinity)</span><br></pre></td></tr></table></figure>
 <strong>表锁是通过Next-Key Locks来实现的锁表操作。</strong><h2 id="锁的用法"><a href="#锁的用法" class="headerlink" title="锁的用法"></a>锁的用法</h2>SELECT … LOCK IN SHARE MODE 共享行锁<br>SELECT … FOR UPDATE 排他行锁<br>LOCK TABLE … READ 共享读锁<br>LOCK TABLE … WRITE 排他写锁</li>
 </ol>
@@ -457,7 +485,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -470,7 +498,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -507,12 +535,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">194k</span>
+    <span title="站点总字数">208k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:56</span>
+    <span title="站点阅读时长">3:09</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
