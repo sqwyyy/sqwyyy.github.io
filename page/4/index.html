@@ -165,7 +165,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/hashcode/">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/09/02/redis%E7%9A%84bitmap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -179,7 +179,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/archives/2020/05/25/hashcode/" class="post-title-link" itemprop="url">hashcode</a>
+            <a href="/archives/2020/09/02/redis%E7%9A%84bitmap/" class="post-title-link" itemprop="url">redis的bitmap</a>
         </h2>
 
         <div class="post-meta">
@@ -189,543 +189,15 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-05-25 21:41:08" itemprop="dateCreated datePublished" datetime="2020-05-25T21:41:08+08:00">2020-05-25</time>
+              <time title="创建时间：2020-09-02 19:36:21" itemprop="dateCreated datePublished" datetime="2020-09-02T19:36:21+08:00">2020-09-02</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-17 17:58:11" itemprop="dateModified" datetime="2020-08-17T17:58:11+08:00">2020-08-17</time>
+                <time title="修改时间：2020-09-03 16:01:41" itemprop="dateModified" datetime="2020-09-03T16:01:41+08:00">2020-09-03</time>
               </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">JAVA基础知识</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>923</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <hr>
-<h1 id="equals与-的区别"><a href="#equals与-的区别" class="headerlink" title="equals与==的区别"></a>equals与==的区别</h1><p><strong>值类型是存储在内存中的堆栈（以后简称栈），而引用类型的变量在栈中仅仅是存储引用类型变量的地址，而其本身则存储在堆中。</strong></p>
-<p>  <strong>==操作比较的是两个变量的值是否相等，对于引用型变量表示的是两个变量在堆中存储的地址是否相同，即栈中的内容是否相同。</strong></p>
-<p> <strong>equals操作表示的两个变量是否是对同一个对象的引用，即堆中的内容是否相同。</strong></p>
-<p><strong>==比较的是两个对象的地址，而equals比较的是两个对象的内容。</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		String a = <span class="string">"qqq"</span>;</span><br><span class="line">		String b = <span class="string">"qqq"</span>;  <span class="comment">//保存到字符串缓冲池里，当有相同值的对象，就引用该对象，否则重新创建字符串</span></span><br><span class="line">		System.out.println(a==b);  <span class="comment">//比较的是地址</span></span><br><span class="line">		System.out.println(a.equals(b));  <span class="comment">//比较的是值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">true</span><br><span class="line">true</span><br></pre></td></tr></table></figure>
-<p><strong>程序在运行的时候会创建一个字符串缓冲池当使用 b = “qqq” 这样的表达是创建字符串的时候，程序首先会在这个String缓冲池中寻找相同值的对象，在第一个程序中，a先被放到了池中，所以在b被创建的时候，程序找到了具有相同值的 a</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	  String a = <span class="string">"money"</span>;</span><br><span class="line">	  String b = <span class="keyword">new</span> String(<span class="string">"money"</span>);</span><br><span class="line">	  System.out.println(a==b);  <span class="comment">//比较的是地址</span></span><br><span class="line">		System.out.println(a.equals(b));  <span class="comment">//比较的是值</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">false</span><br><span class="line">true</span><br></pre></td></tr></table></figure>
-<p> <strong>第二段程序中，使用了 new 操作符，他明白的告诉程序：”我要一个新的！不要旧的！”于是一个新的”money”Sting对象被创建在内存中。他们的值相同，但是位置不同。</strong></p>
-<p><a href="https://blog.csdn.net/zxl1148377834/article/details/82858192" target="_blank" rel="noopener">equals与==的区别</a></p>
-<h2 id="为什么重写equals要重写hashcode"><a href="#为什么重写equals要重写hashcode" class="headerlink" title="为什么重写equals要重写hashcode"></a>为什么重写equals要重写hashcode</h2><p>因为在hashmap等集合类中要根据各个类的hashcode来计算哈希值，如果根据equals来进行比较，两个相同的类在hashmap中存储的位置不同。</p>
-<ul>
-<li>默认情况下equals是比较对象的内存地址</li>
-<li>hashcode也是根据对象的内存地址计算</li>
-</ul>
-<p><a href="https://www.zhihu.com/search?type=content&amp;q=%E4%B8%BA%E4%BB%80%E4%B9%88%E9%87%8D%E5%86%99equals%E8%A6%81%E9%87%8D%E5%86%99hashcode" target="_blank" rel="noopener">为什么重写equals要重写hashcode</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/%E6%AD%BB%E9%94%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="100Cooke">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/2020/05/25/%E6%AD%BB%E9%94%81/" class="post-title-link" itemprop="url">死锁</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-25 21:37:13" itemprop="dateCreated datePublished" datetime="2020-05-25T21:37:13+08:00">2020-05-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-20 18:30:59" itemprop="dateModified" datetime="2020-09-20T18:30:59+08:00">2020-09-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h1><h2 id="什么是死锁"><a href="#什么是死锁" class="headerlink" title="什么是死锁"></a>什么是死锁</h2><p>死锁是指两个或两个以上的进程在执行过程中，由于竞争资源或者由于彼此通信而造成的一种阻塞的现象，若无外力作用，它们都将无法推进下去。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/2020/05/25/%E6%AD%BB%E9%94%81/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="100Cooke">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/2020/05/25/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="post-title-link" itemprop="url">操作系统基础知识</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-25 21:36:34" itemprop="dateCreated datePublished" datetime="2020-05-25T21:36:34+08:00">2020-05-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-21 10:29:27" itemprop="dateModified" datetime="2020-09-21T10:29:27+08:00">2020-09-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>916</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="大内核和微内核"><a href="#大内核和微内核" class="headerlink" title="大内核和微内核"></a>大内核和微内核</h2><h3 id="大内核"><a href="#大内核" class="headerlink" title="大内核"></a>大内核</h3><p><strong>大内核，就是将操作系统的全部功能都放进内核里面</strong>，包括调度、文件系统、网络、设备驱动器、存储管理等等，组成一个紧密连接整体。</p>
-<ul>
-<li>大内核的优点就是效率高，</li>
-<li>但是很难定位<code>bug</code>，拓展性比较差，每次需要增加新的功能，都要将新的代码和原来的内核代码重新编译。</li>
-</ul>
-<h3 id="微内核"><a href="#微内核" class="headerlink" title="微内核"></a>微内核</h3><p>微内核与单体内核不同，<strong>微内核只是将操作中最核心的功能加入内核，包括<code>IPC</code>、地址空间分配和基本的调度</strong>，这些东西都在内核态运行，其他功能作为模块被内核调用，并且是<strong>在用户空间运行</strong>。</p>
-<ul>
-<li>微内核比较好维护和拓展，</li>
-<li>但是效率可能不高，因为需要频繁地在<strong>内核态和用户态之间切换。</strong></li>
-</ul>
-<h2 id="用户态和内核态"><a href="#用户态和内核态" class="headerlink" title="用户态和内核态"></a>用户态和内核态</h2><p>根据进程访问资源的特点，我们可以把进程在系统上的运行分为两个级别：</p>
-<ol>
-<li>用户态(user mode) : 用户态运行的进程或可以直接读取用户程序的数据。</li>
-<li>内核态(kernel mode):可以简单的理解系统态运行的进程或程序几乎可以访问计算机的任何资源，不受限制。</li>
-</ol>
-<h2 id="中断分类"><a href="#中断分类" class="headerlink" title="中断分类"></a>中断分类</h2><h3 id="外中断"><a href="#外中断" class="headerlink" title="外中断"></a>外中断</h3><p>由CPU执行指令以外的事件引起，如I/O完成中断，表示设备输入/输出处理已完成，处理器能够发送下一个输入/输出请求。此外还有时钟中断、控制台中断等。</p>
-<p>例如:</p>
-<p> <strong>当外围设备完成用户请求的操作后，会向CPU发出相应的中断信号，这时CPU会暂停执行下一条即将要执行的指令转而去执行与中断信号对应的处理程序，如果先前执行的指令是用户态下的程序，那么这个转换的过程自然也就发生了由用户态到内核态的切换</strong>。比如硬盘读写操作的完成，系统会切换到硬盘读写的中断处理程序中执行后续操作等。 </p>
-<h3 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h3><p>由CPU执行指令的内部事件引起，如非法操作码、地址越界、算术溢出等。</p>
-<h3 id="陷入"><a href="#陷入" class="headerlink" title="陷入"></a>陷入</h3><p>在用户程序中使用系统调用</p>
-<h2 id="系统调用"><a href="#系统调用" class="headerlink" title="系统调用"></a>系统调用</h2><p>如果一个进程在用户态需要使用内核态的功能，就进行系统调用从而陷入内核，由操作系统代为完成。</p>
-<p>linux的系统调用主要有:</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Task</th>
-<th>Commands</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>进程控制</td>
-<td>fork();exit();wait();</td>
-</tr>
-<tr>
-<td>进程通信</td>
-<td>pipe();shmget();mmap();</td>
-</tr>
-<tr>
-<td>文件操作</td>
-<td>open(); read(); write();</td>
-</tr>
-<tr>
-<td>设备操作</td>
-<td>ioctl(); read(); write();</td>
-</tr>
-<tr>
-<td>信息维护</td>
-<td>getpid(); alarm(); sleep();</td>
-</tr>
-<tr>
-<td>安全</td>
-<td>chmod(); umask(); chown();</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B5%85%E6%8B%B7%E8%B4%9D/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="100Cooke">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/2020/05/25/%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B5%85%E6%8B%B7%E8%B4%9D/" class="post-title-link" itemprop="url">深拷贝与浅拷贝</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-05-25 21:33:47 / 修改时间：21:38:10" itemprop="dateCreated datePublished" datetime="2020-05-25T21:33:47+08:00">2020-05-25</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">JAVA基础知识</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="基本类型和引用类型在内存中的保存"><a href="#基本类型和引用类型在内存中的保存" class="headerlink" title="基本类型和引用类型在内存中的保存"></a>基本类型和引用类型在内存中的保存</h1><p>Java中数据类型分为两大类：<strong>基本类型和对象类型</strong><br>变量也有两种类型：<strong>基本类型和引用类型</strong></p>
-<p><strong>基本类型的变量保存原始值，即它代表的值就是数值本身</strong><br><strong>引用类型的变量保存引用值，”引用值”指向内存空间的地址，代表了某个对象的引用，而不是对象本身，对象本身存放在这个引用值所表示的地址的位置</strong>。<br>基本类型包括：byte,short,int,long,char,float,double,boolean<br>引用类型包括：类类型，接口类型和数组</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/2020/05/25/%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B5%85%E6%8B%B7%E8%B4%9D/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="100Cooke">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/2020/05/25/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97/" class="post-title-link" itemprop="url">阻塞队列</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-25 21:32:05" itemprop="dateCreated datePublished" datetime="2020-05-25T21:32:05+08:00">2020-05-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-18 14:50:53" itemprop="dateModified" datetime="2020-08-18T14:50:53+08:00">2020-08-18</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E9%9B%86%E5%90%88%E7%B1%BB/" itemprop="url" rel="index"><span itemprop="name">JAVA集合类</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="为什么要用阻塞队列"><a href="#为什么要用阻塞队列" class="headerlink" title="为什么要用阻塞队列"></a>为什么要用阻塞队列</h1><p>在并发编程中，有时候需要使用<strong>线程安全的队列</strong>。如果要实现一个线程安全的队列有两种方式：一种是使用阻塞算法，另一种是使用非阻塞算法。</p>
-<ol>
-<li>使用阻塞算法的队列可以用一个锁（入队和出队用同一把锁）或两个锁（入队和出队用不同的锁）等方式来实现。</li>
-<li>非阻塞的实现方式则可以使用循环CAS的方式来实现。</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/2020/05/25/%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/redis%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="100Cooke">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/2020/05/25/redis%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">redis常见问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-05-25 21:30:21 / 修改时间：21:31:20" itemprop="dateCreated datePublished" datetime="2020-05-25T21:30:21+08:00">2020-05-25</time>
-            </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -742,7 +214,537 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.6k</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="BitMap是什么"><a href="#BitMap是什么" class="headerlink" title="BitMap是什么"></a>BitMap是什么</h1><p>​      就是通过一个bit位来表示某个元素对应的值或者状态,其中的key就是对应元素本身。我们知道<strong>8个bit可以组成一个Byte</strong>，所以bitmap本身会极大的节省储存空间。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/2020/09/02/redis%E7%9A%84bitmap/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/09/02/Linux%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/2020/09/02/Linux%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">Linux常见命令</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-02 15:08:56" itemprop="dateCreated datePublished" datetime="2020-09-02T15:08:56+08:00">2020-09-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-03 16:01:41" itemprop="dateModified" datetime="2020-09-03T16:01:41+08:00">2020-09-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>77</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="查找vim的进程id"><a href="#查找vim的进程id" class="headerlink" title="查找vim的进程id"></a>查找vim的进程id</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep vim</span><br></pre></td></tr></table></figure>
+<h2 id="强制杀死某个进程"><a href="#强制杀死某个进程" class="headerlink" title="强制杀死某个进程"></a>强制杀死某个进程</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill -9 id</span><br></pre></td></tr></table></figure>
+<p><strong>ps查看的结果不是动态连续的，想要动态的显示进程信息，就可以用top命令</strong></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/09/01/sql%E8%AF%AD%E5%8F%A5%E7%BB%83%E4%B9%A0-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/2020/09/01/sql%E8%AF%AD%E5%8F%A5%E7%BB%83%E4%B9%A0-1/" class="post-title-link" itemprop="url">sql语句练习</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-01 23:04:25" itemprop="dateCreated datePublished" datetime="2020-09-01T23:04:25+08:00">2020-09-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-03 16:01:41" itemprop="dateModified" datetime="2020-09-03T16:01:41+08:00">2020-09-03</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>0</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/09/01/%E9%9D%99%E6%80%81%E5%8F%98%E9%87%8F%E5%92%8C%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F%E7%9A%84%E5%8C%BA%E5%88%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/2020/09/01/%E9%9D%99%E6%80%81%E5%8F%98%E9%87%8F%E5%92%8C%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F%E7%9A%84%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">静态变量和实例变量的区别</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-09-01 21:11:49 / 修改时间：21:17:11" itemprop="dateCreated datePublished" datetime="2020-09-01T21:11:49+08:00">2020-09-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">JAVA基础知识</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>856</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>​       在Java中，静态变量和实例变量可以<strong>统称为成员变量</strong>。首先，明白什么是静态变量，什么是实例变量，他们定义的形式。<strong>静态变量也叫做类变量，独立于方法之外的变量，有static修饰</strong>。<strong>实例变量同样独立也是独立于方法之外 的变量，但没有static修饰</strong>。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/2020/09/01/%E9%9D%99%E6%80%81%E5%8F%98%E9%87%8F%E5%92%8C%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F%E7%9A%84%E5%8C%BA%E5%88%AB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/08/31/BigDecimal/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/2020/08/31/BigDecimal/" class="post-title-link" itemprop="url">BigDecimal</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-08-31 19:44:14 / 修改时间：19:55:28" itemprop="dateCreated datePublished" datetime="2020-08-31T19:44:14+08:00">2020-08-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">JAVA基础知识</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>float和double类型主要是为了科学计算和工程计算而设计的。他们执行二进制浮点运算，这是为了在广泛的数字范围上<strong>提供较为精确的快速近似计算而精心设计的</strong>。然而，它们并没有提供完全精确的结果，所以我们不应该用于精确计算的场合。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/2020/08/31/BigDecimal/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/08/31/double%E7%B2%BE%E5%BA%A6%E4%B8%8D%E5%87%86%E5%A4%87%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/2020/08/31/double%E7%B2%BE%E5%BA%A6%E4%B8%8D%E5%87%86%E5%A4%87%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">double精度不准备问题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-08-31 19:27:13 / 修改时间：19:55:28" itemprop="dateCreated datePublished" datetime="2020-08-31T19:27:13+08:00">2020-08-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">JAVA基础知识</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>​       float和double类型主要是为了科学计算和工程计算而设计的。他们执行二进制浮点运算，这是为了在广泛的数字范围上<strong>提供较为精确的快速近似计算而精心设计的</strong>。然而，它们并没有提供完全精确的结果，所以我们不应该用于精确计算的场合。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/2020/08/31/double%E7%B2%BE%E5%BA%A6%E4%B8%8D%E5%87%86%E5%A4%87%E9%97%AE%E9%A2%98/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/08/30/%E4%B8%89%E4%B8%AA%E7%BA%BF%E7%A8%8B%E4%BE%9D%E6%AC%A1%E8%BE%93%E5%87%BAABC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/2020/08/30/%E4%B8%89%E4%B8%AA%E7%BA%BF%E7%A8%8B%E4%BE%9D%E6%AC%A1%E8%BE%93%E5%87%BAABC/" class="post-title-link" itemprop="url">三个线程依次输出ABC</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-30 14:54:46" itemprop="dateCreated datePublished" datetime="2020-08-30T14:54:46+08:00">2020-08-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-31 15:59:49" itemprop="dateModified" datetime="2020-08-31T15:59:49+08:00">2020-08-31</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">JAVA多线程</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -761,10 +763,108 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="redis快的原因"><a href="#redis快的原因" class="headerlink" title="redis快的原因"></a>redis快的原因</h1>
+          <a id="more"></a>
+<h1 id="采用synchronized"><a href="#采用synchronized" class="headerlink" title="采用synchronized"></a>采用synchronized</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String str = <span class="string">"ABC"</span>;</span><br><span class="line">        Main Main = <span class="keyword">new</span> Main();</span><br><span class="line">        ThreadA threadA = Main.<span class="keyword">new</span> ThreadA();</span><br><span class="line">        ThreadB threadB = Main.<span class="keyword">new</span> ThreadB();</span><br><span class="line">        ThreadC threadC = Main.<span class="keyword">new</span> ThreadC();</span><br><span class="line">        threadA.start();</span><br><span class="line">        threadB.start();</span><br><span class="line">        threadC.start();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 打印A</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> LKB</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ThreadA</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">private</span> String str;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">            <span class="keyword">while</span>(count &lt; <span class="number">28</span>)&#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (Main<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span>(count%<span class="number">3</span> == <span class="number">0</span>)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"A"</span>);</span><br><span class="line">                        count++;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;       </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 打印B</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> LKB</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ThreadB</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">private</span> String str;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">            <span class="keyword">while</span>(count &lt; <span class="number">29</span>)&#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (Main<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span>(count%<span class="number">3</span> == <span class="number">1</span>)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"B"</span>);</span><br><span class="line">                        count++;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;       </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 打印C</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> LKB</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ThreadC</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">private</span> String str;</span><br><span class="line">        </span><br><span class="line">       </span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">            <span class="keyword">while</span>(count &lt; <span class="number">30</span>)&#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (Main<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span>(count%<span class="number">3</span> == <span class="number">2</span>)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"C"</span>);</span><br><span class="line">                        System.out.println(<span class="string">"++++++"</span>);</span><br><span class="line">                        System.out.println(<span class="string">"------"</span>);</span><br><span class="line">                        count++;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;       </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>主要采用synchronzied锁住代码块，然后通过volatile变量来控制输出ABC</li>
+</ul>
+<h2 id="采用Lock和Condition"><a href="#采用Lock和Condition" class="headerlink" title="采用Lock和Condition"></a>采用Lock和Condition</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Condition;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Lock;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">private</span> Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">    <span class="keyword">private</span> Condition conditionA = lock.newCondition();</span><br><span class="line">    <span class="keyword">private</span> Condition conditionB = lock.newCondition();</span><br><span class="line">    <span class="keyword">private</span> Condition conditionC = lock.newCondition();</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Main printABC = <span class="keyword">new</span> Main();</span><br><span class="line">        ThreadA threadA = printABC.<span class="keyword">new</span> ThreadA();</span><br><span class="line">        ThreadB threadB = printABC.<span class="keyword">new</span> ThreadB();</span><br><span class="line">        ThreadC threadC = printABC.<span class="keyword">new</span> ThreadC();</span><br><span class="line">        threadA.start();</span><br><span class="line">        threadB.start();</span><br><span class="line">        threadC.start();</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 打印A</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> LKB</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ThreadA</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">                <span class="keyword">while</span>(count &lt; <span class="number">30</span>)&#123;</span><br><span class="line">                    <span class="keyword">if</span> (count%<span class="number">3</span> != <span class="number">0</span>) &#123;</span><br><span class="line">                        conditionA.await();</span><br><span class="line">                    &#125;</span><br><span class="line">                    System.out.println(<span class="string">"A"</span>);</span><br><span class="line">                    count ++;</span><br><span class="line">                    conditionB.signalAll();    </span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="comment">// <span class="doctag">TODO:</span> handle exception</span></span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">                lock.unlock();</span><br><span class="line">                System.out.println(<span class="string">"ThreadA 中执行了 unlock"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 打印B</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> LKB</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ThreadB</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">                <span class="keyword">while</span>(count &lt; <span class="number">30</span>)&#123;</span><br><span class="line">                    <span class="keyword">if</span> (count%<span class="number">3</span> != <span class="number">1</span>) &#123;</span><br><span class="line">                        conditionB.await();</span><br><span class="line">                    &#125;</span><br><span class="line">                    System.out.println(<span class="string">"B"</span>);</span><br><span class="line">                    count ++;</span><br><span class="line">                    conditionC.signalAll();                </span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="comment">// <span class="doctag">TODO:</span> handle exception</span></span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">                lock.unlock();</span><br><span class="line">                System.out.println(<span class="string">"ThreadB 中执行了 unlock"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 打印C</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> LKB</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ThreadC</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">                <span class="keyword">while</span>(count &lt; <span class="number">30</span>)&#123;</span><br><span class="line">                    <span class="keyword">if</span> (count%<span class="number">3</span> != <span class="number">2</span>) &#123;</span><br><span class="line">                        conditionC.await();</span><br><span class="line">                    &#125;</span><br><span class="line">                    System.out.println(<span class="string">"C"</span>);</span><br><span class="line">                    System.out.println(<span class="string">"+++++++"</span>);</span><br><span class="line">                    System.out.println(<span class="string">"-------"</span>);</span><br><span class="line">                    count ++;</span><br><span class="line">                    <span class="keyword">if</span>(count &lt; <span class="number">30</span>)&#123;</span><br><span class="line">                        conditionA.signalAll();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="comment">// <span class="doctag">TODO:</span> handle exception</span></span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">                lock.unlock();</span><br><span class="line">                System.out.println(<span class="string">"ThreadC 中执行了 unlock"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>采用lock和condition结合使用即可</li>
+<li>condition的await相当于Object的wait</li>
+<li>condition的signal对于Object的notify</li>
+<li>Condition中的signalAll()对应Object的notifyAll()</li>
+<li>condition必须要在lock与unlock之间使用</li>
+</ul>
+<p><a href="https://www.jianshu.com/p/e3c6d4a5dd4b" target="_blank" rel="noopener">condition原理讲解</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/08/30/leetcode-%E6%9C%80%E5%A4%A7%E5%AD%90%E7%9F%A9%E9%98%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/2020/08/30/leetcode-%E6%9C%80%E5%A4%A7%E5%AD%90%E7%9F%A9%E9%98%B5/" class="post-title-link" itemprop="url">leetcode 最大子矩阵</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-08-30 09:52:59 / 修改时间：10:04:36" itemprop="dateCreated datePublished" datetime="2020-08-30T09:52:59+08:00">2020-08-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="https://leetcode-cn.com/problems/max-submatrix-lcci/" target="_blank" rel="noopener">题目来源</a></p>
+<h1 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h1><p>给定一个正整数和负整数组成的 N × M 矩阵，编写代码<strong>找出元素总和最大的子矩阵</strong>。</p>
+<p>返回一个数组 [r1, c1, r2, c2]，其中 r1, c1 分别代表子矩阵左上角的行号和列号，r2, c2 分别代表右下角的行号和列号。若有多个满足条件的子矩阵，返回任意一个均可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">输入:</span><br><span class="line">[</span><br><span class="line">   [-1,0],</span><br><span class="line">   [0,-1]</span><br><span class="line">]</span><br><span class="line">输出: [0,1,0,1]</span><br><span class="line">解释: 输入中标粗的元素即为输出所表示的矩阵</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/archives/2020/05/25/redis%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/#more" rel="contents">
+              <a class="btn" href="/archives/2020/08/30/leetcode-%E6%9C%80%E5%A4%A7%E5%AD%90%E7%9F%A9%E9%98%B5/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -788,7 +888,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/springboot%E6%95%B4%E5%90%88redis/">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/08/23/%E7%BE%8E%E5%9B%A2%E7%AC%94%E8%AF%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -802,7 +902,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/archives/2020/05/25/springboot%E6%95%B4%E5%90%88redis/" class="post-title-link" itemprop="url">springboot整合redis</a>
+            <a href="/archives/2020/08/23/%E7%BE%8E%E5%9B%A2%E7%AC%94%E8%AF%95/" class="post-title-link" itemprop="url">美团笔试</a>
         </h2>
 
         <div class="post-meta">
@@ -813,7 +913,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-05-25 21:28:32 / 修改时间：21:31:20" itemprop="dateCreated datePublished" datetime="2020-05-25T21:28:32+08:00">2020-05-25</time>
+              <time title="创建时间：2020-08-23 21:47:30 / 修改时间：21:56:15" itemprop="dateCreated datePublished" datetime="2020-08-23T21:47:30+08:00">2020-08-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -821,7 +921,104 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E7%AC%94%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">笔试</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>161</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="合并金币"><a href="#合并金币" class="headerlink" title="合并金币"></a>合并金币</h1><p><a href="https://www.nowcoder.com/questionTerminal/6d3ccbc5b6ad4f12b8fe4c97eaf969e0?f=discussion" target="_blank" rel="noopener">题目链接</a></p>
+<p>有 N 堆金币排成一排，第 i 堆中有 C[i] 块金币。每次合并都会将相邻的两堆金币合并为一堆，成本为这两堆金币块数之和。经过N-1次合并，最终将所有金币合并为一堆。请找出将金币合并为一堆的最低成本。  </p>
+<p>其中，1 &lt;= N &lt;= 30，1 &lt;= C[i] &lt;= 100</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/2020/08/23/%E7%BE%8E%E5%9B%A2%E7%AC%94%E8%AF%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/08/18/%E5%AD%97%E8%8A%822020%E6%98%A5%E6%8B%9B%E7%AC%94%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="100Cooke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/2020/08/18/%E5%AD%97%E8%8A%822020%E6%98%A5%E6%8B%9B%E7%AC%94%E8%AF%95/" class="post-title-link" itemprop="url">字节2020春招笔试</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-18 22:10:30" itemprop="dateCreated datePublished" datetime="2020-08-18T22:10:30+08:00">2020-08-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 23:12:59" itemprop="dateModified" datetime="2020-08-23T23:12:59+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AC%94%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">笔试</span></a>
                 </span>
             </span>
 
@@ -850,284 +1047,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="导入maven依赖"><a href="#导入maven依赖" class="headerlink" title="导入maven依赖"></a>导入maven依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-cache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"> <span class="comment">&lt;!-- 添加Redis缓存支持 --&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.4.3.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"> <span class="comment">&lt;!--spring2.0集成redis所需common-pool2--&gt;</span></span><br><span class="line"> <span class="comment">&lt;!-- 必须加上，jedis依赖此  --&gt;</span></span><br><span class="line"> <span class="comment">&lt;!-- spring boot 2.0 的操作手册有标注 大家可以去看看 地址是：https://docs.spring.io/spring-boot/docs/2.0.3.RELEASE/reference/htmlsingle/--&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.commons<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-pool2<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.5.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+          <h1 id="万万没想到之抓捕孔连顺"><a href="#万万没想到之抓捕孔连顺" class="headerlink" title="万万没想到之抓捕孔连顺"></a>万万没想到之抓捕孔连顺</h1><p><a href="https://www.nowcoder.com/questionTerminal/c0803540c94848baac03096745b55b9b?answerType=1&amp;f=discussion" target="_blank" rel="noopener">题目链接</a></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/archives/2020/05/25/springboot%E6%95%B4%E5%90%88redis/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/redis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="100Cooke">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/2020/05/25/redis/" class="post-title-link" itemprop="url">redis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-05-25 21:27:14 / 修改时间：21:31:20" itemprop="dateCreated datePublished" datetime="2020-05-25T21:27:14+08:00">2020-05-25</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="基本类型"><a href="#基本类型" class="headerlink" title="基本类型"></a>基本类型</h1><p>Redis 有 5 种基础数据结构，它们分别是：<strong>string、list、字典、压缩列表和跳跃表</strong>。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/2020/05/25/redis/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/JVM/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="100Cooke">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/2020/05/25/JVM/" class="post-title-link" itemprop="url">JVM</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-25 21:26:15" itemprop="dateCreated datePublished" datetime="2020-05-25T21:26:15+08:00">2020-05-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-17 22:24:09" itemprop="dateModified" datetime="2020-09-17T22:24:09+08:00">2020-09-17</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E8%99%9A%E6%8B%9F%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">JAVA虚拟机</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>6.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>以下都是以hotspot虚拟机为准</strong></p>
-<h1 id="JVM分区"><a href="#JVM分区" class="headerlink" title="JVM分区"></a>JVM分区</h1><p>Java虚拟机在执行java程序的过程中会把它所管理的内存划分为几个不同的数据区域，分别是<br><strong>程序计数器，java虚拟机栈，本地方法栈，堆，方法区</strong>。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/2020/05/25/JVM/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://sqwyyy.github.io/archives/2020/05/25/JMM/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="100Cooke">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/2020/05/25/JMM/" class="post-title-link" itemprop="url">JMM</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-05-25 21:23:39 / 修改时间：21:31:20" itemprop="dateCreated datePublished" datetime="2020-05-25T21:23:39+08:00">2020-05-25</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E8%99%9A%E6%8B%9F%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">JAVA虚拟机</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p><strong>Java内存模型（Java Memory Model ,JMM）就是一种符合内存模型规范的，屏蔽了各种硬件和操作系统的访问差异的，保证了Java程序在各种平台下对内存的访问都能保证效果一致的机制及规范</strong>。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/2020/05/25/JMM/#more" rel="contents">
+              <a class="btn" href="/archives/2020/08/18/%E5%AD%97%E8%8A%822020%E6%98%A5%E6%8B%9B%E7%AC%94%E8%AF%95/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1150,7 +1073,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1218,20 +1141,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">82</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1268,12 +1191,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">208k</span>
+    <span title="站点总字数">241k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:09</span>
+    <span title="站点阅读时长">3:39</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

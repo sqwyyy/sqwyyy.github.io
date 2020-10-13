@@ -27,10 +27,12 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="来源来源来源 简介数据库索引,是数据库管理系统中一个的数据结构,以协助快速查询,更新数据库中表的数据.MySQL常见索引实现主要有两种结构：Hash索引和B+ Tree索引，InnoDB引擎，默认的是B+树。  分类逻辑分类 普通索引最基本的索引类型，没有唯一性之类的限制。普通索引可以通过以下几种方式创建：创建索引，例如CREATE INDEX &lt;索引的名字&gt; ON tablename">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic3.zhimg.com/v2-fcde0ef783885b6b17999f39ca2808b5_b.jpg">
 <meta property="article:published_time" content="2020-05-25T13:05:57.484Z">
-<meta property="article:modified_time" content="2020-09-22T07:06:13.290Z">
+<meta property="article:modified_time" content="2020-09-28T13:27:11.758Z">
 <meta property="article:author" content="100Cooke">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic3.zhimg.com/v2-fcde0ef783885b6b17999f39ca2808b5_b.jpg">
 
 <link rel="canonical" href="https://sqwyyy.github.io/archives/2020/05/25/mysql%E7%B4%A2%E5%BC%95/">
 
@@ -200,7 +202,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-22 15:06:13" itemprop="dateModified" datetime="2020-09-22T15:06:13+08:00">2020-09-22</time>
+                <time title="修改时间：2020-09-28 21:27:11" itemprop="dateModified" datetime="2020-09-28T21:27:11+08:00">2020-09-28</time>
               </span>
 
           <br>
@@ -209,14 +211,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>7.4k</span>
+              <span>8.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>7 分钟</span>
+              <span>8 分钟</span>
             </span>
 
         </div>
@@ -357,7 +359,25 @@
 <li>所有的查询都要查找到叶子节点，查询性能是稳定的，而B树，每个节点都可以查找到数据，所以不稳定。 </li>
 <li>所有的叶子节点形成了一个有序<a href="">链表</a>，更加便于查找。</li>
 </ul>
+<h3 id="b-树的缺点"><a href="#b-树的缺点" class="headerlink" title="b+树的缺点"></a>b+树的缺点</h3><p><strong>B+树最大的性能问题是会产生大量的随机IO，随着新数据的插入，叶子节点会慢慢分裂，逻辑上连续的叶子节点在物理上往往不连续，甚至分离的很远，但做范围查询时，会产生大量读随机IO</strong>。对于大量的随机写也一样，举一个插入key跨度很大的例子，如7-&gt;1000-&gt;3-&gt;2000 … 新插入的数据存储在磁盘上相隔很远，会产生大量的随机写IO.</p>
 <hr>
+<h1 id="联合索引"><a href="#联合索引" class="headerlink" title="联合索引"></a>联合索引</h1><p>联合索引就是多个索引</p>
+<p>所谓<strong>最左原则</strong>指的就是如果你的 SQL 语句中用到了联合索引中的最左边的索引，那么这条 SQL 语句就可以利用这个联合索引去进行匹配，<strong>值得注意的是，当遇到范围查询(&gt;、&lt;、between、like)就会停止匹配</strong>。</p>
+<p>假设，我们对(a,b)字段建立一个索引，也就是说，你where后条件为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a &#x3D; 1</span><br><span class="line">a &#x3D; 1 and b &#x3D; 2</span><br></pre></td></tr></table></figure>
+<p>是可以匹配索引的。但是要注意的是~你执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">b&#x3D; 2 and a &#x3D;1</span><br></pre></td></tr></table></figure>
+<p>也是能匹配到索引的，因为<strong>Mysql有优化器会自动调整a,b的顺序与索引顺序一致</strong>。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>假设，我们对(a,b)字段建立索引，那么入下图所示</p>
+<p><img src="https://pic3.zhimg.com/v2-fcde0ef783885b6b17999f39ca2808b5_b.jpg" alt=""></p>
+<p>如图所示他们是按照a来进行排序，在a相等的情况下，才按b来排序。</p>
+<p>因此，我们可以看到a是有序的1，1，2，2，3，3。而b是一种全局无序，局部相对有序状态! <em>什么意思呢？</em> </p>
+<p>从全局来看，b的值为1，2，1，4，1，2，是无序的，因此直接执行<strong>b = 2</strong>这种查询条件没有办法利用索引。</p>
+<p>从局部来看，当a的值确定的时候，b是有序的。例如a = 1时，b值为1，2是有序的状态。当a=2时候，b的值为1,4也是有序状态。 因此，你执行<strong>a = 1 and b = 2</strong>是a,b字段能用到索引的。而你执行<strong>a &gt; 1 and b = 2</strong>时，<strong>a字段能用到索引，b字段用不到索引。因为a的值此时是一个范围，不是固定的，在这个范围内b值不是有序的，因此b字段用不上索引</strong>。</p>
+<p>综上所示，<strong>最左匹配原则，在遇到范围查询的时候，就会停止匹配。</strong></p>
+<p><strong>联合索引的最左前缀匹配，所谓最左前缀匹配即是where条件必须有联合索引的第一个字段</strong></p>
+<p><a href="https://zhuanlan.zhihu.com/p/110427099" target="_blank" rel="noopener">联合索引</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/115778804" target="_blank" rel="noopener">联合索引列子</a></p>
 <h1 id="使用explain"><a href="#使用explain" class="headerlink" title="使用explain"></a>使用explain</h1><h2 id="为什么要使用explain"><a href="#为什么要使用explain" class="headerlink" title="为什么要使用explain"></a>为什么要使用explain</h2><p><strong>通过explain命令我们可以学习到该条SQL是如何执行的，随后解析explain的结果可以帮助我们使用更好的索引，最终来优化它</strong>！ </p>
 <h2 id="执行结果"><a href="#执行结果" class="headerlink" title="执行结果"></a>执行结果</h2><p>explain命令输出的结果有10列：id、select_type、table、type、possible_keys、key、key_len、ref、rows、Extra</p>
 <div class="table-container">
@@ -518,7 +538,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分类"><span class="nav-number">2.</span> <span class="nav-text">分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#逻辑分类"><span class="nav-number">2.1.</span> <span class="nav-text">逻辑分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引的不同"><span class="nav-number">2.2.</span> <span class="nav-text">索引的不同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#物理分类"><span class="nav-number">2.3.</span> <span class="nav-text">物理分类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#哪些列适合建立索引，哪些列不适合建立索引"><span class="nav-number">3.</span> <span class="nav-text">哪些列适合建立索引，哪些列不适合建立索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#失效"><span class="nav-number">4.</span> <span class="nav-text">失效</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化"><span class="nav-number">5.</span> <span class="nav-text">优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b树的原理"><span class="nav-number">6.</span> <span class="nav-text">b树的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#不使用搜索二叉树当索引使用b树或b-树当索引的原因"><span class="nav-number">6.1.</span> <span class="nav-text">不使用搜索二叉树当索引使用b树或b+树当索引的原因:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库索引为什么使用B-树而不是hash"><span class="nav-number">6.2.</span> <span class="nav-text">数据库索引为什么使用B+树而不是hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B树与B-树区别"><span class="nav-number">6.3.</span> <span class="nav-text">B树与B+树区别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#相同点"><span class="nav-number">6.3.1.</span> <span class="nav-text">相同点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不同点"><span class="nav-number">6.3.2.</span> <span class="nav-text">不同点</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用explain"><span class="nav-number"></span> <span class="nav-text">使用explain</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要使用explain"><span class="nav-number">1.</span> <span class="nav-text">为什么要使用explain</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行结果"><span class="nav-number">2.</span> <span class="nav-text">执行结果</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#select-type"><span class="nav-number">2.1.</span> <span class="nav-text">select_type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#type"><span class="nav-number">2.2.</span> <span class="nav-text">type</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extra"><span class="nav-number">3.</span> <span class="nav-text">Extra</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分类"><span class="nav-number">2.</span> <span class="nav-text">分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#逻辑分类"><span class="nav-number">2.1.</span> <span class="nav-text">逻辑分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引的不同"><span class="nav-number">2.2.</span> <span class="nav-text">索引的不同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#物理分类"><span class="nav-number">2.3.</span> <span class="nav-text">物理分类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#哪些列适合建立索引，哪些列不适合建立索引"><span class="nav-number">3.</span> <span class="nav-text">哪些列适合建立索引，哪些列不适合建立索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#失效"><span class="nav-number">4.</span> <span class="nav-text">失效</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化"><span class="nav-number">5.</span> <span class="nav-text">优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b树的原理"><span class="nav-number">6.</span> <span class="nav-text">b树的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#不使用搜索二叉树当索引使用b树或b-树当索引的原因"><span class="nav-number">6.1.</span> <span class="nav-text">不使用搜索二叉树当索引使用b树或b+树当索引的原因:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库索引为什么使用B-树而不是hash"><span class="nav-number">6.2.</span> <span class="nav-text">数据库索引为什么使用B+树而不是hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B树与B-树区别"><span class="nav-number">6.3.</span> <span class="nav-text">B树与B+树区别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#相同点"><span class="nav-number">6.3.1.</span> <span class="nav-text">相同点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不同点"><span class="nav-number">6.3.2.</span> <span class="nav-text">不同点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-树的缺点"><span class="nav-number">6.4.</span> <span class="nav-text">b+树的缺点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#联合索引"><span class="nav-number"></span> <span class="nav-text">联合索引</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用explain"><span class="nav-number"></span> <span class="nav-text">使用explain</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要使用explain"><span class="nav-number">1.</span> <span class="nav-text">为什么要使用explain</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行结果"><span class="nav-number">2.</span> <span class="nav-text">执行结果</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#select-type"><span class="nav-number">2.1.</span> <span class="nav-text">select_type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#type"><span class="nav-number">2.2.</span> <span class="nav-text">type</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extra"><span class="nav-number">3.</span> <span class="nav-text">Extra</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -534,20 +554,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">82</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -584,12 +604,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">208k</span>
+    <span title="站点总字数">241k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:09</span>
+    <span title="站点阅读时长">3:39</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

@@ -28,7 +28,7 @@
 <meta property="og:description" content="使用线程池的原因 降低系统资源消耗，通过重用已存在的线程，降低线程创建和销毁造成的消耗 提高系统响应速度，当有任务到达时，通过复用已存在的线程，无需等待新线程的创建便能立即执行； 方便线程并发数的管控。因为线程若是无限制的创建，可能会导致内存占用过多而产生OOM，并且会造成cpu过度切换来源">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-05-25T12:57:16.000Z">
-<meta property="article:modified_time" content="2020-05-25T13:10:20.032Z">
+<meta property="article:modified_time" content="2020-10-13T14:20:46.516Z">
 <meta property="article:author" content="100Cooke">
 <meta property="article:tag" content="JAVA线程池">
 <meta name="twitter:card" content="summary">
@@ -193,10 +193,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-05-25 20:57:16 / 修改时间：21:10:20" itemprop="dateCreated datePublished" datetime="2020-05-25T20:57:16+08:00">2020-05-25</time>
+              <time title="创建时间：2020-05-25 20:57:16" itemprop="dateCreated datePublished" datetime="2020-05-25T20:57:16+08:00">2020-05-25</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-13 22:20:46" itemprop="dateModified" datetime="2020-10-13T22:20:46+08:00">2020-10-13</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -255,23 +261,17 @@
 </ol>
 <h2 id="线程池为什么使用阻塞队列而不适用非阻塞队列"><a href="#线程池为什么使用阻塞队列而不适用非阻塞队列" class="headerlink" title="线程池为什么使用阻塞队列而不适用非阻塞队列"></a>线程池为什么使用阻塞队列而不适用非阻塞队列</h2><ol>
 <li>阻塞队列可以保证任务队列中没有任务时阻塞获取任务的线程，使得线程进入wait状态，释放cpu资源。</li>
-<li><p>当队列中有任务时才唤醒对应线程从队列中取出消息进行执行。使得在线程不至于一直占用cpu资源。</p>
-<h2 id="java中提供的线程池"><a href="#java中提供的线程池" class="headerlink" title="java中提供的线程池"></a>java中提供的线程池</h2><p>Executors类提供了4种不同的线程池：newCachedThreadPool, newFixedThreadPool, newScheduledThreadPool, newSingleThreadExecutor</p>
-</li>
-<li><p>newCachedThreadPool：用来创建一个可以无限扩大的线程池，适用于负载较轻的场景，执行短期异步任务。（可以使得任务快速得到执行，因为任务时间执行短，可以很快结束，也不会造成cpu过度切换）</p>
+<li>当队列中有任务时才唤醒对应线程从队列中取出消息进行执行。使得在线程不至于一直占用cpu资源。<h2 id="java中提供的线程池"><a href="#java中提供的线程池" class="headerlink" title="java中提供的线程池"></a>java中提供的线程池</h2>Executors类提供了4种不同的线程池：newCachedThreadPool, newFixedThreadPool, newScheduledThreadPool, newSingleThreadExecutor</li>
+</ol>
+<h3 id="newCachedThreadPool"><a href="#newCachedThreadPool" class="headerlink" title="newCachedThreadPool"></a>newCachedThreadPool</h3><p>用来创建一个可以无限扩大的线程池，适用于负载较轻的场景，执行短期异步任务。（可以使得任务快速得到执行，因为任务时间执行短，可以很快结束，也不会造成cpu过度切换）</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newCachedThreadPool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">0</span>, Integer.MAX_VALUE,</span><br><span class="line">                                      <span class="number">60L</span>, TimeUnit.SECONDS,</span><br><span class="line">                                      <span class="keyword">new</span> SynchronousQueue&lt;Runnable&gt;());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>newFixedThreadPool：创建一个固定大小的线程池，因为采用无界的阻塞队列，所以实际线程数量永远不会变化，适用于负载较重的场景，对当前线程数量进行限制。（保证线程数可控，不会造成线程过多，导致系统负载更为严重）</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newFixedThreadPool</span><span class="params">(<span class="keyword">int</span> nThreads)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(nThreads, nThreads,</span><br><span class="line">                                      <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span><br><span class="line">                                      <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li>newSingleThreadExecutor：创建一个单线程的线程池，适用于需要保证顺序执行各个任务。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newSingleThreadExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> FinalizableDelegatedExecutorService</span><br><span class="line">            (<span class="keyword">new</span> ThreadPoolExecutor(<span class="number">1</span>, <span class="number">1</span>,</span><br><span class="line">                                    <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span><br><span class="line">                                    <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li>newScheduledThreadPool：适用于执行延时或者周期性任务。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ScheduledThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(corePoolSize, Integer.MAX_VALUE, <span class="number">0</span>, NANOSECONDS,</span><br><span class="line">              <span class="keyword">new</span> DelayedWorkQueue());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="线程池的状态"><a href="#线程池的状态" class="headerlink" title="线程池的状态"></a>线程池的状态</h2></li>
+<h3 id="newFixedThreadPool"><a href="#newFixedThreadPool" class="headerlink" title="newFixedThreadPool"></a>newFixedThreadPool</h3><p>创建一个固定大小的线程池，因为采用无界的阻塞队列，所以实际线程数量永远不会变化，适用于负载较重的场景，对当前线程数量进行限制。（保证线程数可控，不会造成线程过多，导致系统负载更为严重）</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newFixedThreadPool</span><span class="params">(<span class="keyword">int</span> nThreads)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(nThreads, nThreads,</span><br><span class="line">                                      <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span><br><span class="line">                                      <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="newSingleThreadExecutor"><a href="#newSingleThreadExecutor" class="headerlink" title="newSingleThreadExecutor"></a>newSingleThreadExecutor</h3><p>创建一个单线程的线程池，适用于需要保证顺序执行各个任务。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newSingleThreadExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> FinalizableDelegatedExecutorService</span><br><span class="line">            (<span class="keyword">new</span> ThreadPoolExecutor(<span class="number">1</span>, <span class="number">1</span>,</span><br><span class="line">                                    <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span><br><span class="line">                                    <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="newScheduledThreadPool"><a href="#newScheduledThreadPool" class="headerlink" title="newScheduledThreadPool"></a>newScheduledThreadPool</h3><p>适用于执行延时或者周期性任务。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ScheduledThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(corePoolSize, Integer.MAX_VALUE, <span class="number">0</span>, NANOSECONDS,</span><br><span class="line">              <span class="keyword">new</span> DelayedWorkQueue());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="线程池的状态"><a href="#线程池的状态" class="headerlink" title="线程池的状态"></a>线程池的状态</h2><ol>
 <li>RUNNING：-1 &lt;&lt; COUNT_BITS，即高3位为111，该状态的线程池会接收新任务，并处理阻塞队列中的任务；</li>
 <li>SHUTDOWN： 0 &lt;&lt; COUNT_BITS，即高3位为000，该状态的线程池不会接收新任务，但会处理阻塞队列中的任务；</li>
 <li>STOP ： 1 &lt;&lt; COUNT_BITS，即高3位为001，该状态的线程不会接收新任务，也不会处理阻塞队列中的任务，而且会中断正在运行的任务；</li>
@@ -386,7 +386,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用线程池的原因"><span class="nav-number">1.</span> <span class="nav-text">使用线程池的原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池的主要参数"><span class="nav-number">2.</span> <span class="nav-text">线程池的主要参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池流程"><span class="nav-number">3.</span> <span class="nav-text">线程池流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池为什么使用阻塞队列而不适用非阻塞队列"><span class="nav-number">4.</span> <span class="nav-text">线程池为什么使用阻塞队列而不适用非阻塞队列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#java中提供的线程池"><span class="nav-number">5.</span> <span class="nav-text">java中提供的线程池</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池的状态"><span class="nav-number">6.</span> <span class="nav-text">线程池的状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池的拒绝策略"><span class="nav-number">7.</span> <span class="nav-text">线程池的拒绝策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AbortPolicy"><span class="nav-number">7.1.</span> <span class="nav-text">AbortPolicy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CallerRunsPolicy"><span class="nav-number">7.2.</span> <span class="nav-text">CallerRunsPolicy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DiscardPolicy"><span class="nav-number">7.3.</span> <span class="nav-text">DiscardPolicy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DiscardOldestPolicy"><span class="nav-number">7.4.</span> <span class="nav-text">DiscardOldestPolicy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义策略"><span class="nav-number">7.5.</span> <span class="nav-text">自定义策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实际操作"><span class="nav-number">8.</span> <span class="nav-text">实际操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何实现一个简单的线程池"><span class="nav-number">9.</span> <span class="nav-text">如何实现一个简单的线程池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ThreadPoolExecutor源码分析"><span class="nav-number">9.1.</span> <span class="nav-text">ThreadPoolExecutor源码分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池与异步任务"><span class="nav-number">9.2.</span> <span class="nav-text">线程池与异步任务</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用线程池的原因"><span class="nav-number">1.</span> <span class="nav-text">使用线程池的原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池的主要参数"><span class="nav-number">2.</span> <span class="nav-text">线程池的主要参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池流程"><span class="nav-number">3.</span> <span class="nav-text">线程池流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池为什么使用阻塞队列而不适用非阻塞队列"><span class="nav-number">4.</span> <span class="nav-text">线程池为什么使用阻塞队列而不适用非阻塞队列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#java中提供的线程池"><span class="nav-number">5.</span> <span class="nav-text">java中提供的线程池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#newCachedThreadPool"><span class="nav-number">5.1.</span> <span class="nav-text">newCachedThreadPool</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#newFixedThreadPool"><span class="nav-number">5.2.</span> <span class="nav-text">newFixedThreadPool</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#newSingleThreadExecutor"><span class="nav-number">5.3.</span> <span class="nav-text">newSingleThreadExecutor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#newScheduledThreadPool"><span class="nav-number">5.4.</span> <span class="nav-text">newScheduledThreadPool</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池的状态"><span class="nav-number">6.</span> <span class="nav-text">线程池的状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池的拒绝策略"><span class="nav-number">7.</span> <span class="nav-text">线程池的拒绝策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AbortPolicy"><span class="nav-number">7.1.</span> <span class="nav-text">AbortPolicy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CallerRunsPolicy"><span class="nav-number">7.2.</span> <span class="nav-text">CallerRunsPolicy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DiscardPolicy"><span class="nav-number">7.3.</span> <span class="nav-text">DiscardPolicy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DiscardOldestPolicy"><span class="nav-number">7.4.</span> <span class="nav-text">DiscardOldestPolicy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义策略"><span class="nav-number">7.5.</span> <span class="nav-text">自定义策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实际操作"><span class="nav-number">8.</span> <span class="nav-text">实际操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何实现一个简单的线程池"><span class="nav-number">9.</span> <span class="nav-text">如何实现一个简单的线程池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ThreadPoolExecutor源码分析"><span class="nav-number">9.1.</span> <span class="nav-text">ThreadPoolExecutor源码分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池与异步任务"><span class="nav-number">9.2.</span> <span class="nav-text">线程池与异步任务</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -402,20 +402,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">82</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -452,12 +452,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">208k</span>
+    <span title="站点总字数">241k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:09</span>
+    <span title="站点阅读时长">3:39</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
